@@ -2,13 +2,9 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Clock, Volume2, Repeat, Trash2, MoreVertical } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Clock, Volume2, Repeat, Zap } from "lucide-react";
+import { AlarmContextMenu } from "./AlarmContextMenu";
+import { Badge } from "@/components/ui/badge";
 
 interface AlarmCardProps {
   id: string;
@@ -17,6 +13,8 @@ interface AlarmCardProps {
   isActive: boolean;
   repeatDays?: string[];
   soundName?: string;
+  missionEnabled?: boolean;
+  missionCount?: number;
   onToggle: (id: string, active: boolean) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -29,6 +27,8 @@ export const AlarmCard = ({
   isActive,
   repeatDays = [],
   soundName = "Default",
+  missionEnabled = false,
+  missionCount = 0,
   onToggle,
   onEdit,
   onDelete,
@@ -38,6 +38,18 @@ export const AlarmCard = ({
   const handleToggle = (checked: boolean) => {
     setIsEnabled(checked);
     onToggle(id, checked);
+  };
+
+  const handlePreview = () => {
+    alert(`Playing preview of ${soundName}`);
+  };
+
+  const handleSkipOnce = () => {
+    alert("Alarm skipped for next occurrence");
+  };
+
+  const handleDuplicate = () => {
+    alert("Alarm duplicated");
   };
 
   const formatTime = (timeString: string) => {
@@ -75,6 +87,15 @@ export const AlarmCard = ({
               </div>
             )}
             
+            {missionEnabled && (
+              <div className="flex items-center gap-1">
+                <Zap className="h-3 w-3" />
+                <Badge variant="secondary" className="text-xs px-1 py-0">
+                  Mission ✕{missionCount}
+                </Badge>
+              </div>
+            )}
+            
             <div className="flex items-center gap-1">
               <Volume2 className="h-3 w-3" />
               <span>{soundName}</span>
@@ -89,26 +110,13 @@ export const AlarmCard = ({
             className="data-[state=checked]:bg-primary"
           />
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-card border-border">
-              <DropdownMenuItem onClick={() => onEdit(id)}>
-                <Clock className="h-4 w-4 mr-2" />
-                Edit Alarm
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => onDelete(id)}
-                className="text-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <AlarmContextMenu
+            onEdit={() => onEdit(id)}
+            onDelete={() => onDelete(id)}
+            onPreview={handlePreview}
+            onSkipOnce={handleSkipOnce}
+            onDuplicate={handleDuplicate}
+          />
         </div>
       </div>
     </Card>

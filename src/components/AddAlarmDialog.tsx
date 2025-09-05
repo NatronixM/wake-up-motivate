@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Upload } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { TimePickerDialog } from "./TimePickerDialog";
 
 interface AddAlarmDialogProps {
   onAddAlarm: (alarm: {
@@ -20,11 +21,17 @@ interface AddAlarmDialogProps {
     isActive: boolean;
     repeatDays: string[];
     soundName: string;
+    missionEnabled?: boolean;
+    missionCount?: number;
+    snoozeEnabled?: boolean;
+    snoozeDuration?: number;
+    volume?: number;
   }) => void;
 }
 
 export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
-  const [open, setOpen] = useState(false);
+  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [timePickerOpen, setTimePickerOpen] = useState(false);
   const [time, setTime] = useState("07:00");
   const [label, setLabel] = useState("");
   const [isActive, setIsActive] = useState(true);
@@ -54,7 +61,7 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
     );
   };
 
-  const handleSave = () => {
+  const handleQuickSave = () => {
     onAddAlarm({
       time,
       label,
@@ -62,11 +69,20 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
       repeatDays,
       soundName,
     });
-    setOpen(false);
+    setQuickAddOpen(false);
     setTime("07:00");
     setLabel("");
     setRepeatDays([]);
     setSoundName("Motivational Dawn");
+  };
+
+  const handleAdvancedSave = (alarmData: any) => {
+    onAddAlarm(alarmData);
+  };
+
+  const openAdvancedEditor = () => {
+    setQuickAddOpen(false);
+    setTimePickerOpen(true);
   };
 
   const handleCustomSound = () => {
@@ -75,116 +91,97 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="lg"
-          className="bg-gradient-primary hover:opacity-90 shadow-glow h-14 px-8 rounded-full"
-        >
-          <Plus className="h-6 w-6 mr-2" />
-          Add Alarm
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="bg-card border-border/50 max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-xl text-center">New Alarm</DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-6">
-          {/* Time Picker */}
-          <div className="text-center">
-            <Input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="text-4xl font-light text-center border-none bg-transparent text-foreground h-16"
-            />
-          </div>
-
-          {/* Label */}
-          <div className="space-y-2">
-            <Label htmlFor="label">Label</Label>
-            <Input
-              id="label"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="Morning workout"
-              className="bg-secondary/50 border-border/50"
-            />
-          </div>
-
-          {/* Repeat Days */}
-          <div className="space-y-3">
-            <Label>Repeat</Label>
-            <div className="flex gap-2">
-              {days.map((day, index) => (
-                <Button
-                  key={index}
-                  variant={repeatDays.includes(dayNames[index]) ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleDayToggle(index)}
-                  className={`w-10 h-10 rounded-full p-0 ${
-                    repeatDays.includes(dayNames[index])
-                      ? 'bg-primary text-primary-foreground'
-                      : 'border-border/50'
-                  }`}
-                >
-                  {day}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* Sound Selection */}
-          <div className="space-y-3">
-            <Label>Alarm Sound</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {motivationalSounds.map((sound) => (
-                <Button
-                  key={sound}
-                  variant={soundName === sound ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSoundName(sound)}
-                  className={`text-xs ${
-                    soundName === sound
-                      ? 'bg-primary text-primary-foreground'
-                      : 'border-border/50'
-                  }`}
-                >
-                  {sound}
-                </Button>
-              ))}
-            </div>
-            
-            <Button
-              variant="outline"
-              onClick={handleCustomSound}
-              className="w-full border-border/50"
-            >
-              <Upload className="h-4 w-4 mr-2" />
-              Upload Custom Sound
-            </Button>
-          </div>
-
-          {/* Active Toggle */}
-          <div className="flex items-center justify-between">
-            <Label htmlFor="active">Active</Label>
-            <Switch
-              id="active"
-              checked={isActive}
-              onCheckedChange={setIsActive}
-            />
-          </div>
-
-          {/* Save Button */}
+    <>
+      <Dialog open={quickAddOpen} onOpenChange={setQuickAddOpen}>
+        <DialogTrigger asChild>
           <Button
-            onClick={handleSave}
-            className="w-full bg-gradient-primary hover:opacity-90"
+            size="lg"
+            className="bg-gradient-primary hover:opacity-90 shadow-glow h-14 px-8 rounded-full"
           >
-            Save Alarm
+            <Plus className="h-6 w-6 mr-2" />
+            Add Alarm
           </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogTrigger>
+        <DialogContent className="bg-card border-border/50 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl text-center">Quick Add Alarm</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Time Picker */}
+            <div className="text-center">
+              <Input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="text-4xl font-light text-center border-none bg-transparent text-foreground h-16"
+              />
+            </div>
+
+            {/* Label */}
+            <div className="space-y-2">
+              <Label htmlFor="label">Label</Label>
+              <Input
+                id="label"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                placeholder="Morning workout"
+                className="bg-secondary/50 border-border/50"
+              />
+            </div>
+
+            {/* Repeat Days */}
+            <div className="space-y-3">
+              <Label>Repeat</Label>
+              <div className="flex gap-2">
+                {days.map((day, index) => (
+                  <Button
+                    key={index}
+                    variant={repeatDays.includes(dayNames[index]) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handleDayToggle(index)}
+                    className={`w-10 h-10 rounded-full p-0 ${
+                      repeatDays.includes(dayNames[index])
+                        ? 'bg-primary text-primary-foreground'
+                        : 'border-border/50'
+                    }`}
+                  >
+                    {day}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Button
+                onClick={handleQuickSave}
+                className="w-full bg-gradient-primary hover:opacity-90"
+              >
+                Quick Save
+              </Button>
+              
+              <Button
+                onClick={openAdvancedEditor}
+                variant="outline"
+                className="w-full border-border/50"
+              >
+                Advanced Settings
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <TimePickerDialog
+        open={timePickerOpen}
+        onOpenChange={setTimePickerOpen}
+        initialTime={time}
+        initialLabel={label}
+        initialRepeatDays={repeatDays}
+        initialSoundName={soundName}
+        onSave={handleAdvancedSave}
+      />
+    </>
   );
 };

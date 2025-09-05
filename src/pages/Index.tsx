@@ -4,6 +4,9 @@ import { AlarmCard } from "@/components/AlarmCard";
 import { AddAlarmDialog } from "@/components/AddAlarmDialog";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { Settings } from "./Settings";
+import { SleepTracker } from "@/components/SleepTracker";
+import { MorningFeeling } from "@/components/MorningFeeling";
+import { ProBanner } from "@/components/ProBanner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, TrendingUp } from "lucide-react";
@@ -16,6 +19,11 @@ interface Alarm {
   isActive: boolean;
   repeatDays: string[];
   soundName: string;
+  missionEnabled?: boolean;
+  missionCount?: number;
+  snoozeEnabled?: boolean;
+  snoozeDuration?: number;
+  volume?: number;
 }
 
 const Index = () => {
@@ -27,7 +35,10 @@ const Index = () => {
       label: 'Morning workout',
       isActive: true,
       repeatDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      soundName: 'Rise & Shine'
+      soundName: 'Rise & Shine',
+      missionEnabled: true,
+      missionCount: 3,
+      volume: 80
     },
     {
       id: '2',
@@ -35,7 +46,9 @@ const Index = () => {
       label: 'Bedtime reminder',
       isActive: true,
       repeatDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      soundName: 'Peaceful Dreams'
+      soundName: 'Peaceful Dreams',
+      missionEnabled: false,
+      volume: 70
     },
     {
       id: '3',
@@ -43,7 +56,10 @@ const Index = () => {
       label: 'Early meditation',
       isActive: false,
       repeatDays: ['Mon', 'Wed', 'Fri'],
-      soundName: 'Zen Chimes'
+      soundName: 'Zen Chimes',
+      missionEnabled: true,
+      missionCount: 1,
+      volume: 60
     }
   ]);
 
@@ -83,6 +99,27 @@ const Index = () => {
     );
   }
 
+  if (activeTab === 'sleep') {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <Header title="Sleep Tracker" />
+        <div className="px-4">
+          <SleepTracker />
+        </div>
+        <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+    );
+  }
+
+  if (activeTab === 'morning') {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <MorningFeeling />
+        <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header title="Motivational Alarm Clock" showProBadge />
@@ -99,6 +136,9 @@ const Index = () => {
             </div>
           </Card>
         )}
+
+        {/* Pro Banner */}
+        <ProBanner />
 
         {/* Student Deal Banner */}
         <Card className="bg-gradient-card border-border/50 p-4 shadow-card">
@@ -129,6 +169,8 @@ const Index = () => {
               isActive={alarm.isActive}
               repeatDays={alarm.repeatDays}
               soundName={alarm.soundName}
+              missionEnabled={alarm.missionEnabled}
+              missionCount={alarm.missionCount}
               onToggle={handleToggleAlarm}
               onEdit={handleEditAlarm}
               onDelete={handleDeleteAlarm}

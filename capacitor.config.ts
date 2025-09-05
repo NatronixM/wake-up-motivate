@@ -9,11 +9,36 @@ const config: CapacitorConfig = {
     cleartext: true
   },
   plugins: {
+    LocalNotifications: {
+      smallIcon: "ic_stat_icon_config_sample",
+      iconColor: "#a855f7",
+      sound: "motivational_alarm.wav",
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       backgroundColor: '#1a1625',
-      showSpinner: false
+      showSpinner: false,
+      androidScaleType: "CENTER_CROP"
+    },
+    StatusBar: {
+      style: "dark",
+      backgroundColor: "#1a1625"
+    },
+    Device: {
+      // Enable device info access
+    },
+    Haptics: {
+      // Enable vibration feedback
     }
+  },
+  android: {
+    allowMixedContent: true,
+    captureInput: true,
+    webContentsDebuggingEnabled: true
+  },
+  ios: {
+    contentInset: "automatic",
+    scrollEnabled: true
   }
 };
 
