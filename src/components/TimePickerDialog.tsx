@@ -13,6 +13,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Volume2, VolumeX, Smartphone } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
+import { TrackSelector } from "./TrackSelector";
+import { MotivationalTrack, defaultTracks } from "@/data/motivationalTracks";
 
 interface TimePickerDialogProps {
   open: boolean;
@@ -42,14 +44,16 @@ export const TimePickerDialog = ({
   initialTime,
   initialLabel = "",
   initialRepeatDays = [],
-  initialSoundName = "Motivational Dawn",
+  initialSoundName = "Rise & Shine",
   initialMissionEnabled = false,
   onSave,
 }: TimePickerDialogProps) => {
   const [time, setTime] = useState(initialTime);
   const [label, setLabel] = useState(initialLabel);
   const [repeatDays, setRepeatDays] = useState<string[]>(initialRepeatDays);
-  const [soundName, setSoundName] = useState(initialSoundName);
+  const [selectedTrack, setSelectedTrack] = useState<MotivationalTrack | null>(
+    defaultTracks.find(track => track.name === initialSoundName) || defaultTracks[0]
+  );
   const [missionEnabled, setMissionEnabled] = useState(initialMissionEnabled);
   const [missionCount, setMissionCount] = useState(3);
   const [snoozeEnabled, setSnoozeEnabled] = useState(true);
@@ -65,19 +69,6 @@ export const TimePickerDialog = ({
 
   const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  const motivationalSounds = [
-    "Motivational Dawn",
-    "Rise & Shine",
-    "Power Morning",
-    "Victory Bell",
-    "Success Chimes",
-    "Champion's Call",
-    "Morning Thunder",
-    "Triumph Melody",
-    "Energy Boost",
-    "Inspiration Flow"
-  ];
 
   const missionTypes = [
     { name: "Math Problems", icon: "🧮", count: missionCount },
@@ -102,7 +93,7 @@ export const TimePickerDialog = ({
       label,
       isActive: true,
       repeatDays,
-      soundName,
+      soundName: selectedTrack?.name || "Rise & Shine",
       missionEnabled,
       missionCount,
       snoozeEnabled,
@@ -237,9 +228,11 @@ export const TimePickerDialog = ({
           {/* Sound Selection */}
           <div className="space-y-3">
             <Label>Sound</Label>
-            <div className="text-right text-muted-foreground">
-              Motivational Alarm c... →
-            </div>
+            <TrackSelector
+              selectedTrackId={selectedTrack?.id}
+              onTrackSelect={setSelectedTrack}
+              showPremiumTracks={true}
+            />
           </div>
 
           {/* Sound Power-up */}

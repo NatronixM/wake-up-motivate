@@ -1,0 +1,19 @@
+# Placeholder for Audio Files
+
+This directory will contain the actual motivational alarm sound files.
+
+To use your own tracks:
+1. Add MP3/WAV files to this directory with the exact filenames from motivationalTracks.ts
+2. Or use the custom track upload feature in the app
+
+Current expected files:
+- rise-and-shine.mp3
+- peaceful-dreams.mp3
+- zen-chimes.mp3
+- victory-march.mp3
+- forest-awakening.mp3
+- success-anthem.mp3
+- ocean-waves.mp3
+- champion-mindset.mp3
+
+You can upload these via URL, cloud storage links, or use the app's built-in upload system.

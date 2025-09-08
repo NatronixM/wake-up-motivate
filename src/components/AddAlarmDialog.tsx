@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Upload } from "lucide-react";
+import { Plus, Upload, Volume2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TimePickerDialog } from "./TimePickerDialog";
+import { defaultTracks } from "@/data/motivationalTracks";
 
 interface AddAlarmDialogProps {
   onAddAlarm: (alarm: {
@@ -36,21 +38,13 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
   const [label, setLabel] = useState("");
   const [isActive, setIsActive] = useState(true);
   const [repeatDays, setRepeatDays] = useState<string[]>([]);
-  const [soundName, setSoundName] = useState("Motivational Dawn");
+  const [soundName, setSoundName] = useState("Rise & Shine");
 
   const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  const motivationalSounds = [
-    "Motivational Dawn",
-    "Rise & Shine",
-    "Power Morning",
-    "Victory Bell",
-    "Success Chimes",
-    "Champion's Call",
-    "Morning Thunder",
-    "Triumph Melody"
-  ];
+  // Get free tracks for quick add
+  const freeTracks = defaultTracks.filter(track => !track.isPremium);
 
   const handleDayToggle = (dayIndex: number) => {
     const dayName = dayNames[dayIndex];
@@ -73,7 +67,7 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
     setTime("07:00");
     setLabel("");
     setRepeatDays([]);
-    setSoundName("Motivational Dawn");
+    setSoundName("Rise & Shine");
   };
 
   const handleAdvancedSave = (alarmData: any) => {
@@ -128,6 +122,26 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
                 placeholder="Morning workout"
                 className="bg-secondary/50 border-border/50"
               />
+            </div>
+
+            {/* Alarm Sound */}
+            <div className="space-y-3">
+              <Label className="flex items-center gap-2">
+                <Volume2 className="h-4 w-4" />
+                Alarm Sound
+              </Label>
+              <Select value={soundName} onValueChange={setSoundName}>
+                <SelectTrigger className="bg-secondary/50 border-border/50">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {freeTracks.map((track) => (
+                    <SelectItem key={track.id} value={track.name}>
+                      {track.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Repeat Days */}
