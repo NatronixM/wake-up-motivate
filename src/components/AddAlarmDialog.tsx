@@ -36,7 +36,11 @@ interface Alarm {
   missionCount?: number;
   snoozeEnabled?: boolean;
   snoozeDuration?: number;
+  maxSnoozes?: number;
+  soundPowerUp?: number;
   volume?: number;
+  wakeUpCheckEnabled?: boolean;
+  wakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
   wallpaper?: Wallpaper;
 }
 
@@ -51,7 +55,11 @@ interface AddAlarmDialogProps {
     missionCount?: number;
     snoozeEnabled?: boolean;
     snoozeDuration?: number;
+    maxSnoozes?: number;
+    soundPowerUp?: number;
     volume?: number;
+    wakeUpCheckEnabled?: boolean;
+    wakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
     wallpaper?: Wallpaper;
   }) => void;
   editingAlarm?: Alarm | null;
@@ -65,7 +73,11 @@ interface AddAlarmDialogProps {
     missionCount?: number;
     snoozeEnabled?: boolean;
     snoozeDuration?: number;
+    maxSnoozes?: number;
+    soundPowerUp?: number;
     volume?: number;
+    wakeUpCheckEnabled?: boolean;
+    wakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
     wallpaper?: Wallpaper;
   }) => void;
   onCancelEdit?: () => void;
@@ -270,6 +282,12 @@ export const AddAlarmDialog = ({
         initialLabel={label}
         initialRepeatDays={repeatDays}
         initialSoundName={soundName}
+        initialSoundPowerUp={editingAlarm?.soundPowerUp}
+        initialSnoozeEnabled={editingAlarm?.snoozeEnabled}
+        initialSnoozeDuration={editingAlarm?.snoozeDuration}
+        initialMaxSnoozes={editingAlarm?.maxSnoozes}
+        initialWakeUpCheckEnabled={editingAlarm?.wakeUpCheckEnabled}
+        initialWakeUpCheckType={editingAlarm?.wakeUpCheckType}
         initialWallpaper={editingAlarm?.wallpaper}
         onSave={handleAdvancedSave}
       />

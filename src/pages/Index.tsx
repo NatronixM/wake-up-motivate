@@ -32,7 +32,11 @@ interface Alarm {
   missionCount?: number;
   snoozeEnabled?: boolean;
   snoozeDuration?: number;
+  maxSnoozes?: number; // -1 for unlimited
+  soundPowerUp?: number; // volume increase percentage
   volume?: number;
+  wakeUpCheckEnabled?: boolean;
+  wakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
   wallpaper?: Wallpaper;
 }
 
@@ -40,6 +44,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('alarm');
   const [editingAlarm, setEditingAlarm] = useState<Alarm | null>(null);
   const [activeAlarm, setActiveAlarm] = useState<Alarm | null>(null);
+  const [snoozeCounts, setSnoozeCounts] = useState<Record<string, number>>({});
   const [alarms, setAlarms] = useState<Alarm[]>([
     {
       id: '1',
@@ -148,8 +153,15 @@ const Index = () => {
   };
 
   const handleSnoozeAlarm = () => {
-    setActiveAlarm(null);
-    toast.info("Alarm snoozed for 5 minutes");
+    if (activeAlarm) {
+      const currentCount = snoozeCounts[activeAlarm.id] || 0;
+      setSnoozeCounts(prev => ({
+        ...prev,
+        [activeAlarm.id]: currentCount + 1
+      }));
+      setActiveAlarm(null);
+      toast.info(`Alarm snoozed for ${activeAlarm.snoozeDuration || 5} minutes`);
+    }
   };
 
   if (activeTab === 'settings') {
@@ -316,6 +328,13 @@ const Index = () => {
           alarmTime={activeAlarm.time}
           missionEnabled={activeAlarm.missionEnabled || false}
           missionCount={activeAlarm.missionCount || 0}
+          snoozeEnabled={activeAlarm.snoozeEnabled ?? true}
+          snoozeDuration={activeAlarm.snoozeDuration || 5}
+          maxSnoozes={activeAlarm.maxSnoozes ?? -1}
+          currentSnoozeCount={snoozeCounts[activeAlarm.id] || 0}
+          wakeUpCheckEnabled={activeAlarm.wakeUpCheckEnabled || false}
+          wakeUpCheckType={activeAlarm.wakeUpCheckType || 'math'}
+          soundPowerUp={activeAlarm.soundPowerUp || 0}
           onDismiss={handleDismissAlarm}
           onSnooze={handleSnoozeAlarm}
         />

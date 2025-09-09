@@ -34,6 +34,12 @@ interface TimePickerDialogProps {
   initialRepeatDays?: string[];
   initialSoundName?: string;
   initialMissionEnabled?: boolean;
+  initialSoundPowerUp?: number;
+  initialSnoozeEnabled?: boolean;
+  initialSnoozeDuration?: number;
+  initialMaxSnoozes?: number;
+  initialWakeUpCheckEnabled?: boolean;
+  initialWakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
   initialWallpaper?: Wallpaper;
   onSave: (alarm: {
     time: string;
@@ -45,7 +51,11 @@ interface TimePickerDialogProps {
     missionCount: number;
     snoozeEnabled: boolean;
     snoozeDuration: number;
+    maxSnoozes: number;
+    soundPowerUp: number;
     volume: number;
+    wakeUpCheckEnabled: boolean;
+    wakeUpCheckType: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
     wallpaper?: Wallpaper;
   }) => void;
 }
@@ -58,6 +68,12 @@ export const TimePickerDialog = ({
   initialRepeatDays = [],
   initialSoundName = "Rise & Shine",
   initialMissionEnabled = false,
+  initialSoundPowerUp = 10,
+  initialSnoozeEnabled = true,
+  initialSnoozeDuration = 5,
+  initialMaxSnoozes = -1,
+  initialWakeUpCheckEnabled = false,
+  initialWakeUpCheckType = 'math',
   initialWallpaper,
   onSave,
 }: TimePickerDialogProps) => {
@@ -71,7 +87,11 @@ export const TimePickerDialog = ({
   const [missionEnabled, setMissionEnabled] = useState(initialMissionEnabled);
   const [missionCount, setMissionCount] = useState(3);
   const [snoozeEnabled, setSnoozeEnabled] = useState(true);
-  const [snoozeDuration, setSnoozeDuration] = useState(5);
+  const [snoozeDuration, setSnoozeDuration] = useState(initialSnoozeDuration);
+  const [maxSnoozes, setMaxSnoozes] = useState(initialMaxSnoozes);
+  const [soundPowerUp, setSoundPowerUp] = useState(initialSoundPowerUp);
+  const [wakeUpCheckEnabled, setWakeUpCheckEnabled] = useState(initialWakeUpCheckEnabled);
+  const [wakeUpCheckType, setWakeUpCheckType] = useState<'math' | 'memory' | 'shake' | 'photo' | 'barcode'>(initialWakeUpCheckType);
   const [volume, setVolume] = useState([80]);
   const [vibrationEnabled, setVibrationEnabled] = useState(true);
   const [selectedWallpaper, setSelectedWallpaper] = useState<Wallpaper | undefined>(initialWallpaper);
@@ -114,7 +134,11 @@ export const TimePickerDialog = ({
       missionCount,
       snoozeEnabled,
       snoozeDuration,
+      maxSnoozes,
+      soundPowerUp,
       volume: volume[0],
+      wakeUpCheckEnabled,
+      wakeUpCheckType,
       wallpaper: selectedWallpaper,
     });
     onOpenChange(false);
@@ -253,15 +277,88 @@ export const TimePickerDialog = ({
           </div>
 
           {/* Sound Power-up */}
-          <div className="flex items-center justify-between">
-            <Label>Sound power-up</Label>
-            <span className="text-sm text-muted-foreground">1 in use →</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Sound power-up</Label>
+              <Badge variant="secondary">{soundPowerUp}% increase</Badge>
+            </div>
+            <Slider
+              value={[soundPowerUp]}
+              onValueChange={(value) => setSoundPowerUp(value[0])}
+              max={50}
+              min={0}
+              step={5}
+              className="w-full"
+            />
           </div>
 
           {/* Snooze */}
-          <div className="flex items-center justify-between">
-            <Label>Snooze</Label>
-            <span className="text-sm text-muted-foreground">5 min, Unlimited →</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Snooze</Label>
+              <Switch
+                checked={snoozeEnabled}
+                onCheckedChange={setSnoozeEnabled}
+              />
+            </div>
+            {snoozeEnabled && (
+              <div className="space-y-3 pl-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Duration (minutes)</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSnoozeDuration(Math.max(1, snoozeDuration - 1))}
+                      className="h-8 w-8 p-0"
+                    >
+                      -
+                    </Button>
+                    <span className="w-8 text-center text-sm">{snoozeDuration}</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSnoozeDuration(Math.min(30, snoozeDuration + 1))}
+                      className="h-8 w-8 p-0"
+                    >
+                      +
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm">Max snoozes</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setMaxSnoozes(maxSnoozes === -1 ? 10 : Math.max(1, maxSnoozes - 1))}
+                      className="h-8 w-8 p-0"
+                    >
+                      -
+                    </Button>
+                    <span className="w-16 text-center text-sm">
+                      {maxSnoozes === -1 ? 'Unlimited' : maxSnoozes}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setMaxSnoozes(maxSnoozes === -1 ? -1 : Math.min(20, maxSnoozes + 1))}
+                      className="h-8 w-8 p-0"
+                    >
+                      +
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setMaxSnoozes(-1)}
+                      className="text-xs"
+                    >
+                      ∞
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Label */}
@@ -277,9 +374,38 @@ export const TimePickerDialog = ({
           </div>
 
           {/* Wake up check */}
-          <div className="flex items-center justify-between">
-            <Label>Wake up check 🔒</Label>
-            <span className="text-muted-foreground">→</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Wake up check</Label>
+              <Switch
+                checked={wakeUpCheckEnabled}
+                onCheckedChange={setWakeUpCheckEnabled}
+              />
+            </div>
+            {wakeUpCheckEnabled && (
+              <div className="pl-4">
+                <Label className="text-sm mb-2 block">Check type</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'math', label: 'Math', icon: '🧮' },
+                    { value: 'memory', label: 'Memory', icon: '🧠' },
+                    { value: 'shake', label: 'Shake', icon: '📳' },
+                    { value: 'photo', label: 'Photo', icon: '📷' },
+                  ].map((type) => (
+                    <Button
+                      key={type.value}
+                      variant={wakeUpCheckType === type.value ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setWakeUpCheckType(type.value as any)}
+                      className="justify-start gap-2"
+                    >
+                      <span>{type.icon}</span>
+                      <span>{type.label}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Alarm wallpaper */}
