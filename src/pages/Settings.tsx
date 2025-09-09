@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Preferences } from "@capacitor/preferences";
 import { 
   ChevronRight, 
   Crown, 
@@ -25,16 +26,14 @@ export const Settings = () => {
   const [faqOpen, setFaqOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [preventPowerOff, setPreventPowerOff] = useState(false);
+  const [wakeLock, setWakeLock] = useState<any>(null);
 
   // Request all necessary permissions on component mount
   useEffect(() => {
     const requestPermissions = async () => {
       try {
         await PermissionsManager.requestAllAlarmPermissions();
-        // Request screen wake lock to prevent power-off
-        if ('wakeLock' in navigator) {
-          await (navigator as any).wakeLock.request('screen');
-        }
       } catch (error) {
         console.error('Failed to request permissions:', error);
       }
@@ -42,6 +41,91 @@ export const Settings = () => {
     
     requestPermissions();
   }, []);
+
+  // Load prevent power-off setting on component mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const { value } = await Preferences.get({ key: 'preventPowerOff' });
+        const isEnabled = value === 'true';
+        setPreventPowerOff(isEnabled);
+        
+        if (isEnabled) {
+          await enableWakeLock();
+        }
+      } catch (error) {
+        console.error('Failed to load prevent power-off setting:', error);
+      }
+    };
+    
+    loadSettings();
+  }, []);
+
+  const enableWakeLock = async () => {
+    try {
+      if ('wakeLock' in navigator) {
+        const lock = await (navigator as any).wakeLock.request('screen');
+        setWakeLock(lock);
+        
+        // Listen for wake lock release
+        lock.addEventListener('release', () => {
+          console.log('Wake lock released');
+          setWakeLock(null);
+        });
+        
+        console.log('Wake lock enabled');
+        return true;
+      } else {
+        console.warn('Wake Lock API not supported');
+        return false;
+      }
+    } catch (error) {
+      console.error('Failed to enable wake lock:', error);
+      return false;
+    }
+  };
+
+  const disableWakeLock = async () => {
+    try {
+      if (wakeLock) {
+        await wakeLock.release();
+        setWakeLock(null);
+        console.log('Wake lock disabled');
+      }
+    } catch (error) {
+      console.error('Failed to disable wake lock:', error);
+    }
+  };
+
+  const togglePreventPowerOff = async (enabled: boolean) => {
+    try {
+      setPreventPowerOff(enabled);
+      
+      // Save setting to preferences
+      await Preferences.set({ 
+        key: 'preventPowerOff', 
+        value: enabled.toString() 
+      });
+      
+      if (enabled) {
+        const success = await enableWakeLock();
+        if (!success) {
+          // If wake lock failed, revert the setting
+          setPreventPowerOff(false);
+          await Preferences.set({ 
+            key: 'preventPowerOff', 
+            value: 'false' 
+          });
+        }
+      } else {
+        await disableWakeLock();
+      }
+    } catch (error) {
+      console.error('Failed to toggle prevent power-off:', error);
+      // Revert on error
+      setPreventPowerOff(!enabled);
+    }
+  };
 
   const tutorialSteps = [
     {
@@ -176,14 +260,30 @@ export const Settings = () => {
             {/* Prevent Power-off */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="bg-green-500/20 p-2 rounded-lg">
-                  <Shield className="h-5 w-5 text-green-500" />
+                <div className={`p-2 rounded-lg transition-colors ${
+                  preventPowerOff ? 'bg-green-500/20' : 'bg-muted/20'
+                }`}>
+                  <Shield className={`h-5 w-5 transition-colors ${
+                    preventPowerOff ? 'text-green-500' : 'text-muted-foreground'
+                  }`} />
                 </div>
-                <span className="font-medium text-foreground">Prevent power-off</span>
+                <div className="flex flex-col">
+                  <span className="font-medium text-foreground">Prevent power-off</span>
+                  <span className="text-xs text-muted-foreground">
+                    Keep screen awake during alarms
+                  </span>
+                </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-green-500 font-medium">ON</span>
-                <Switch checked={true} />
+                <span className={`text-sm font-medium transition-colors ${
+                  preventPowerOff ? 'text-green-500' : 'text-muted-foreground'
+                }`}>
+                  {preventPowerOff ? 'ON' : 'OFF'}
+                </span>
+                <Switch 
+                  checked={preventPowerOff} 
+                  onCheckedChange={togglePreventPowerOff}
+                />
               </div>
             </div>
 
