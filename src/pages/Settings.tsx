@@ -91,7 +91,7 @@ export const Settings = () => {
             <div className="flex-1">
               <h3 className="font-semibold text-foreground">Bryan Miller</h3>
               <p className="text-sm text-muted-foreground">
-                1 days since I met Alarmy💖
+                1 day since I started my journey to peak performance 💪
               </p>
             </div>
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
