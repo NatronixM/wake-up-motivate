@@ -7,6 +7,7 @@ import { AlarmDismissalScreen } from "@/components/AlarmDismissalScreen";
 import { Settings } from "./Settings";
 import { SleepTracker } from "@/components/SleepTracker";
 import { MorningFeeling } from "@/components/MorningFeeling";
+import { Inspiration } from "@/components/Inspiration";
 import { ProBanner } from "@/components/ProBanner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -194,33 +195,10 @@ const Index = () => {
     );
   }
 
-  if (activeTab === 'report') {
+  if (activeTab === 'inspiration') {
     return (
-      <div className="min-h-screen bg-background pb-20">
-        <Header title="Report Issue" />
-        <div className="px-4 py-6">
-          <div className="max-w-md mx-auto space-y-6">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold text-foreground mb-2">
-                Report an Issue
-              </h2>
-              <p className="text-muted-foreground">
-                Help us improve the app by reporting any problems you encounter.
-              </p>
-            </div>
-            
-            <Button
-              onClick={() => {
-                const subject = "Report: Error in the Motivational Alarm Clock";
-                const body = "Please describe the issue you encountered:";
-                window.location.href = `mailto:asuite20@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-              }}
-              className="w-full bg-gradient-primary hover:opacity-90"
-            >
-              Send Report Email
-            </Button>
-          </div>
-        </div>
+      <div>
+        <Inspiration />
         <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );

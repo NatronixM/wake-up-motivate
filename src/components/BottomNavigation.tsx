@@ -11,7 +11,7 @@ export const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationPro
     { id: 'alarm', icon: Clock, label: 'Alarm' },
     { id: 'sleep', icon: Moon, label: 'Sleep' },
     { id: 'morning', icon: Sun, label: 'Morning' },
-    { id: 'report', icon: BarChart3, label: 'Report' },
+    { id: 'inspiration', icon: BarChart3, label: 'Inspiration' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
 
