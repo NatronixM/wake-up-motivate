@@ -80,6 +80,15 @@ export const defaultTracks: MotivationalTrack[] = [
     category: 'energetic',
     isPremium: false,
     description: 'Direct and powerful wake-up call'
+  },
+  {
+    id: '9',
+    name: 'Warrior of Faith',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Motivationsl%20Alarm%20clock%20Warrior%20of%20Faith.mp3',
+    duration: 45,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Powerful spiritual motivation for inner strength'
   }
 ];
 
