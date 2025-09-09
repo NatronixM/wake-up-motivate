@@ -14,7 +14,17 @@ import { Badge } from "@/components/ui/badge";
 import { Volume2, VolumeX, Smartphone } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { TrackSelector } from "./TrackSelector";
+import { WallpaperSelector } from "./WallpaperSelector";
+import { useWallpapers } from "@/hooks/useWallpapers";
 import { MotivationalTrack, defaultTracks } from "@/data/motivationalTracks";
+
+interface Wallpaper {
+  id: string;
+  name: string;
+  type: 'gradient' | 'image';
+  value: string;
+  preview?: string;
+}
 
 interface TimePickerDialogProps {
   open: boolean;
@@ -24,6 +34,7 @@ interface TimePickerDialogProps {
   initialRepeatDays?: string[];
   initialSoundName?: string;
   initialMissionEnabled?: boolean;
+  initialWallpaper?: Wallpaper;
   onSave: (alarm: {
     time: string;
     label: string;
@@ -35,6 +46,7 @@ interface TimePickerDialogProps {
     snoozeEnabled: boolean;
     snoozeDuration: number;
     volume: number;
+    wallpaper?: Wallpaper;
   }) => void;
 }
 
@@ -46,8 +58,10 @@ export const TimePickerDialog = ({
   initialRepeatDays = [],
   initialSoundName = "Rise & Shine",
   initialMissionEnabled = false,
+  initialWallpaper,
   onSave,
 }: TimePickerDialogProps) => {
+  const { customWallpapers, addCustomWallpaper } = useWallpapers();
   const [time, setTime] = useState(initialTime);
   const [label, setLabel] = useState(initialLabel);
   const [repeatDays, setRepeatDays] = useState<string[]>(initialRepeatDays);
@@ -60,6 +74,8 @@ export const TimePickerDialog = ({
   const [snoozeDuration, setSnoozeDuration] = useState(5);
   const [volume, setVolume] = useState([80]);
   const [vibrationEnabled, setVibrationEnabled] = useState(true);
+  const [selectedWallpaper, setSelectedWallpaper] = useState<Wallpaper | undefined>(initialWallpaper);
+  const [wallpaperSelectorOpen, setWallpaperSelectorOpen] = useState(false);
 
   // Parse time for display
   const [hours, minutes] = time.split(':');
@@ -99,6 +115,7 @@ export const TimePickerDialog = ({
       snoozeEnabled,
       snoozeDuration,
       volume: volume[0],
+      wallpaper: selectedWallpaper,
     });
     onOpenChange(false);
   };
@@ -268,7 +285,30 @@ export const TimePickerDialog = ({
           {/* Alarm wallpaper */}
           <div className="flex items-center justify-between">
             <Label>Alarm wallpaper</Label>
-            <div className="w-12 h-8 rounded bg-gradient-to-b from-orange-400 to-pink-400"></div>
+            <Button
+              variant="ghost"
+              className="p-1 h-auto"
+              onClick={() => setWallpaperSelectorOpen(true)}
+            >
+              <div className="w-12 h-8 rounded overflow-hidden border border-border/50">
+                {selectedWallpaper ? (
+                  selectedWallpaper.type === 'gradient' ? (
+                    <div
+                      className="w-full h-full"
+                      style={{ background: selectedWallpaper.value }}
+                    />
+                  ) : (
+                    <img
+                      src={selectedWallpaper.preview || selectedWallpaper.value}
+                      alt={selectedWallpaper.name}
+                      className="w-full h-full object-cover"
+                    />
+                  )
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-b from-orange-400 to-pink-400" />
+                )}
+              </div>
+            </Button>
           </div>
 
           {/* Save Button */}
@@ -279,6 +319,16 @@ export const TimePickerDialog = ({
             Save
           </Button>
         </div>
+
+        {/* Wallpaper Selector Dialog */}
+        <WallpaperSelector
+          open={wallpaperSelectorOpen}
+          onOpenChange={setWallpaperSelectorOpen}
+          selectedWallpaper={selectedWallpaper}
+          onWallpaperSelect={setSelectedWallpaper}
+          customWallpapers={customWallpapers}
+          onAddCustomWallpaper={addCustomWallpaper}
+        />
       </DialogContent>
     </Dialog>
   );

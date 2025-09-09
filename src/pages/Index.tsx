@@ -13,6 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Calendar, TrendingUp, Play } from "lucide-react";
 import { toast } from "sonner";
 
+interface Wallpaper {
+  id: string;
+  name: string;
+  type: 'gradient' | 'image';
+  value: string;
+  preview?: string;
+}
+
 interface Alarm {
   id: string;
   time: string;
@@ -25,6 +33,7 @@ interface Alarm {
   snoozeEnabled?: boolean;
   snoozeDuration?: number;
   volume?: number;
+  wallpaper?: Wallpaper;
 }
 
 const Index = () => {

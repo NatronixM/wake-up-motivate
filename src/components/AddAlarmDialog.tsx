@@ -17,6 +17,14 @@ import { TimePickerDialog } from "./TimePickerDialog";
 import { defaultTracks } from "@/data/motivationalTracks";
 import { toast } from "sonner";
 
+interface Wallpaper {
+  id: string;
+  name: string;
+  type: 'gradient' | 'image';
+  value: string;
+  preview?: string;
+}
+
 interface Alarm {
   id: string;
   time: string;
@@ -29,6 +37,7 @@ interface Alarm {
   snoozeEnabled?: boolean;
   snoozeDuration?: number;
   volume?: number;
+  wallpaper?: Wallpaper;
 }
 
 interface AddAlarmDialogProps {
@@ -43,6 +52,7 @@ interface AddAlarmDialogProps {
     snoozeEnabled?: boolean;
     snoozeDuration?: number;
     volume?: number;
+    wallpaper?: Wallpaper;
   }) => void;
   editingAlarm?: Alarm | null;
   onUpdateAlarm?: (alarm: {
@@ -56,6 +66,7 @@ interface AddAlarmDialogProps {
     snoozeEnabled?: boolean;
     snoozeDuration?: number;
     volume?: number;
+    wallpaper?: Wallpaper;
   }) => void;
   onCancelEdit?: () => void;
 }
@@ -259,6 +270,7 @@ export const AddAlarmDialog = ({
         initialLabel={label}
         initialRepeatDays={repeatDays}
         initialSoundName={soundName}
+        initialWallpaper={editingAlarm?.wallpaper}
         onSave={handleAdvancedSave}
       />
     </>
