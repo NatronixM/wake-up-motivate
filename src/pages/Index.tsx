@@ -178,7 +178,7 @@ const Index = () => {
       <div className="min-h-screen bg-background pb-20">
         <Header title="Sleep Tracker" />
         <div className="px-4">
-          <SleepTracker />
+          <SleepTracker onSetAlarm={() => setActiveTab('alarm')} />
         </div>
         <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
