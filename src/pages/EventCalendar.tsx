@@ -21,7 +21,10 @@ import {
   Edit,
   Clock,
   Music,
-  Bell
+  Bell,
+  Sparkles,
+  Star,
+  Heart
 } from "lucide-react";
 
 interface EventAlarm {
@@ -147,309 +150,422 @@ export const EventCalendar = () => {
     <div className="min-h-screen bg-background pb-20">
       <Header title="Event Calendar" />
       
-      <div className="px-4 space-y-6">
-        {/* Calendar */}
-        <Card className="bg-gradient-card border-border/50 shadow-card">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-foreground">Select Date</h3>
-              <Button
-                size="sm"
-                onClick={() => setEventOpen(true)}
-                className="flex items-center gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                Add Event
-              </Button>
+      <div className="px-4 space-y-8">
+        {/* Hero Section */}
+        <div className="text-center py-6">
+          <div className="inline-flex items-center gap-2 mb-4">
+            <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl">
+              <Sparkles className="h-8 w-8 text-primary" />
             </div>
-            
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className={cn("rounded-md border-0")}
-              modifiers={{
-                hasEvent: events.map(event => event.date)
-              }}
-              modifiersClassNames={{
-                hasEvent: "bg-primary/20 text-primary font-semibold"
-              }}
-            />
+          </div>
+          <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+            Your Motivation Calendar
+          </h2>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Schedule events with custom motivational alarms to stay on track with your goals
+          </p>
+        </div>
+
+        {/* Calendar */}
+        <Card className="bg-gradient-to-br from-card/90 to-card/50 border-border/30 shadow-elegant backdrop-blur-sm overflow-hidden">
+          <div className="bg-gradient-to-r from-primary/5 to-transparent p-1">
+            <div className="bg-card/90 backdrop-blur-sm rounded-lg">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-xl">
+                      <CalendarIcon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground">Select Date</h3>
+                      <p className="text-sm text-muted-foreground">Choose when to schedule your event</p>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={() => setEventOpen(true)}
+                    className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Event
+                  </Button>
+                </div>
+                
+                <div className="bg-gradient-to-br from-background/50 to-background/20 rounded-xl p-4 border border-border/30">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    className={cn("rounded-lg border-0 mx-auto")}
+                    modifiers={{
+                      hasEvent: events.map(event => event.date)
+                    }}
+                    modifiersClassNames={{
+                      hasEvent: "bg-gradient-to-br from-primary/30 to-primary/20 text-primary font-bold border-2 border-primary/40 shadow-md scale-105"
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
 
         {/* Events for Selected Date */}
         {selectedDate && (
-          <Card className="bg-gradient-card border-border/50 shadow-card">
-            <div className="p-4">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
-                Events for {format(selectedDate, 'MMMM d, yyyy')}
-              </h3>
-              
-              {eventsForDate.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  No events scheduled for this date
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {eventsForDate.map((event) => (
-                    <Card key={event.id} className="bg-card/50 border-border/30 p-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            <span className="font-medium text-foreground">{event.time}</span>
-                          </div>
-                          
-                          <p className="text-foreground font-medium">{event.message}</p>
-                          
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Music className="h-3 w-3" />
-                            <span>{getTrackName(event.track)}</span>
-                          </div>
-                          
-                          {event.reminders.length > 0 && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Bell className="h-3 w-3" />
-                              <span>
-                                {event.reminders.length} reminder{event.reminders.length > 1 ? 's' : ''} set
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteEvent(event.id)}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive/90"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+          <Card className="bg-gradient-to-br from-card/90 to-card/50 border-border/30 shadow-elegant backdrop-blur-sm animate-fade-in">
+            <div className="bg-gradient-to-r from-accent/5 to-transparent p-1">
+              <div className="bg-card/90 backdrop-blur-sm rounded-lg">
+                <div className="p-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-accent/10 rounded-xl">
+                      <Star className="h-5 w-5 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-foreground">
+                        Events for {format(selectedDate, 'MMMM d, yyyy')}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">Your scheduled motivational moments</p>
+                    </div>
+                  </div>
+                  
+                  {eventsForDate.length === 0 ? (
+                    <div className="text-center py-12">
+                      <div className="p-4 bg-muted/20 rounded-2xl w-fit mx-auto mb-4">
+                        <CalendarIcon className="h-12 w-12 text-muted-foreground" />
                       </div>
-                    </Card>
-                  ))}
+                      <p className="text-muted-foreground text-lg font-medium mb-2">No events scheduled</p>
+                      <p className="text-sm text-muted-foreground">Add your first motivational event for this date!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {eventsForDate.map((event, index) => (
+                        <Card key={event.id} className="bg-gradient-to-r from-background/80 to-background/40 border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+                          <div className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                                    <Clock className="h-4 w-4 text-primary" />
+                                  </div>
+                                  <span className="font-bold text-lg text-foreground">{event.time}</span>
+                                </div>
+                                
+                                <div className="bg-gradient-to-r from-primary/5 to-transparent p-3 rounded-lg border-l-4 border-primary/30">
+                                  <p className="text-foreground font-semibold text-lg">{event.message}</p>
+                                </div>
+                                
+                                <div className="flex items-center gap-4 text-sm">
+                                  <div className="flex items-center gap-2 text-muted-foreground bg-muted/20 rounded-full px-3 py-1">
+                                    <Music className="h-3 w-3" />
+                                    <span className="font-medium">{getTrackName(event.track)}</span>
+                                  </div>
+                                  
+                                  {event.reminders.length > 0 && (
+                                    <div className="flex items-center gap-2 text-muted-foreground bg-accent/10 rounded-full px-3 py-1">
+                                      <Bell className="h-3 w-3 text-accent" />
+                                      <span className="font-medium">
+                                        {event.reminders.length} reminder{event.reminders.length > 1 ? 's' : ''}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteEvent(event.id)}
+                                className="h-9 w-9 p-0 text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </Card>
         )}
 
         {/* Upcoming Events */}
-        <Card className="bg-gradient-card border-border/50 shadow-card">
-          <div className="p-4">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Upcoming Events</h3>
-            
-            {events.length === 0 ? (
-              <p className="text-muted-foreground text-center py-8">
-                No events scheduled. Create your first event!
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {events
-                  .sort((a, b) => a.date.getTime() - b.date.getTime())
-                  .slice(0, 5)
-                  .map((event) => (
-                    <Card key={event.id} className="bg-card/50 border-border/30 p-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <CalendarIcon className="h-3 w-3" />
-                            <span>{format(event.date, 'MMM d, yyyy')}</span>
-                            <Clock className="h-3 w-3 ml-2" />
-                            <span>{event.time}</span>
+        <Card className="bg-gradient-to-br from-card/90 to-card/50 border-border/30 shadow-elegant backdrop-blur-sm">
+          <div className="bg-gradient-to-r from-secondary/5 to-transparent p-1">
+            <div className="bg-card/90 backdrop-blur-sm rounded-lg">
+              <div className="p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-secondary/10 rounded-xl">
+                    <Heart className="h-5 w-5 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground">Upcoming Events</h3>
+                    <p className="text-sm text-muted-foreground">Your next motivational milestones</p>
+                  </div>
+                </div>
+                
+                {events.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="p-4 bg-muted/20 rounded-2xl w-fit mx-auto mb-4">
+                      <Sparkles className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-lg font-medium mb-2">No events scheduled</p>
+                    <p className="text-sm text-muted-foreground">Create your first motivational event to get started!</p>
+                    <Button 
+                      onClick={() => setEventOpen(true)}
+                      className="mt-4 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Your First Event
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {events
+                      .sort((a, b) => a.date.getTime() - b.date.getTime())
+                      .slice(0, 5)
+                      .map((event, index) => (
+                        <Card key={event.id} className="bg-gradient-to-r from-background/80 to-background/40 border-border/20 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.01] group">
+                          <div className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 space-y-3">
+                                <div className="flex items-center gap-4 text-sm">
+                                  <div className="flex items-center gap-2 bg-primary/10 rounded-full px-3 py-1">
+                                    <CalendarIcon className="h-3 w-3 text-primary" />
+                                    <span className="font-medium text-primary">{format(event.date, 'MMM d, yyyy')}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 bg-accent/10 rounded-full px-3 py-1">
+                                    <Clock className="h-3 w-3 text-accent" />
+                                    <span className="font-medium text-accent">{event.time}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="bg-gradient-to-r from-muted/20 to-transparent p-3 rounded-lg border-l-4 border-muted/40">
+                                  <p className="text-foreground font-semibold">{event.message}</p>
+                                </div>
+                                
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/10 rounded-full px-3 py-1 w-fit">
+                                  <Music className="h-3 w-3" />
+                                  <span className="font-medium">{getTrackName(event.track)}</span>
+                                </div>
+                              </div>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteEvent(event.id)}
+                                className="h-9 w-9 p-0 text-destructive/70 hover:text-destructive hover:bg-destructive/10 transition-all duration-200 opacity-0 group-hover:opacity-100"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
-                          
-                          <p className="text-foreground font-medium">{event.message}</p>
-                          
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <Music className="h-3 w-3" />
-                            <span>{getTrackName(event.track)}</span>
-                          </div>
-                        </div>
-                        
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteEvent(event.id)}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive/90"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
+                        </Card>
+                      ))}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </Card>
       </div>
 
       {/* Create Event Dialog */}
       <Dialog open={eventOpen} onOpenChange={setEventOpen}>
-        <DialogContent className="bg-card border-border max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-foreground">Create Event Alarm</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Set up a custom alarm for your event with reminders.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="event-date" className="text-sm font-medium text-foreground">
-                Select Date
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
+        <DialogContent className="bg-gradient-to-br from-card/95 to-card/80 border-border/30 shadow-2xl backdrop-blur-lg max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-primary/5 to-transparent p-1 rounded-t-lg">
+            <div className="bg-card/50 backdrop-blur-sm rounded-lg">
+              <DialogHeader className="p-6 pb-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 bg-primary/10 rounded-xl">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                  </div>
+                  <DialogTitle className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                    Create Event Alarm
+                  </DialogTitle>
+                </div>
+                <DialogDescription className="text-muted-foreground">
+                  Set up a custom motivational alarm for your special event with personalized reminders.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="px-6 pb-6 space-y-6">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4 text-primary" />
+                    <Label htmlFor="event-date" className="text-sm font-semibold text-foreground">
+                      Select Date
+                    </Label>
+                  </div>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-background/50 border-border/30 hover:bg-background/70 transition-all duration-200",
+                          !selectedDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-card/95 border-border/30 shadow-xl backdrop-blur-lg" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-accent" />
+                    <Label htmlFor="event-time" className="text-sm font-semibold text-foreground">
+                      Time
+                    </Label>
+                  </div>
+                  <Input
+                    id="event-time"
+                    type="time"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                    className="bg-background/50 border-border/30 focus:bg-background/70 transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-secondary" />
+                    <Label htmlFor="event-message" className="text-sm font-semibold text-foreground">
+                      Event Message
+                    </Label>
+                  </div>
+                  <Input
+                    id="event-message"
+                    placeholder="Enter your motivational event message..."
+                    value={eventMessage}
+                    onChange={(e) => setEventMessage(e.target.value)}
+                    className="bg-background/50 border-border/30 focus:bg-background/70 transition-all duration-200"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Music className="h-4 w-4 text-primary" />
+                    <Label className="text-sm font-semibold text-foreground">
+                      Motivational Track
+                    </Label>
+                  </div>
+                  <Select value={selectedTrack} onValueChange={setSelectedTrack}>
+                    <SelectTrigger className="bg-background/50 border-border/30 hover:bg-background/70 transition-all duration-200">
+                      <SelectValue placeholder="Choose a motivational track" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card/95 border-border/30 shadow-xl backdrop-blur-lg">
+                      {defaultTracks.map((track) => (
+                        <SelectItem key={track.id} value={track.id} className="hover:bg-primary/10">
+                          <div className="flex flex-col">
+                            <span className="font-medium">{track.name}</span>
+                            <span className="text-xs text-muted-foreground capitalize">
+                              {track.category} • {track.duration}s
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Bell className="h-4 w-4 text-accent" />
+                      <Label className="text-sm font-semibold text-foreground">
+                        Reminder Times
+                      </Label>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={addCustomReminder}
+                      className="h-8 px-3 hover:bg-primary/10 transition-colors"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add
+                    </Button>
+                  </div>
+                  <div className="space-y-3 max-h-32 overflow-y-auto bg-background/20 rounded-lg p-3 border border-border/20">
+                    {reminders.map((reminder, index) => (
+                      <div key={index} className="flex items-center gap-2 bg-background/50 p-2 rounded-lg">
+                        <Checkbox
+                          checked={reminder.enabled}
+                          onCheckedChange={(checked) => 
+                            updateReminder(index, 'enabled', checked)
+                          }
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Time"
+                          value={reminder.time}
+                          onChange={(e) => updateReminder(index, 'time', e.target.value)}
+                          className="w-16 h-8 bg-transparent border-border/30"
+                          min="1"
+                        />
+                        <Select
+                          value={reminder.unit}
+                          onValueChange={(value) => updateReminder(index, 'unit', value)}
+                        >
+                          <SelectTrigger className="w-20 h-8 bg-transparent border-border/30">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-card/95 border-border/30">
+                            <SelectItem value="minutes">min</SelectItem>
+                            <SelectItem value="hours">hrs</SelectItem>
+                            <SelectItem value="days">days</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <span className="text-xs text-muted-foreground font-medium">before</span>
+                        {reminders.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeReminder(index)}
+                            className="h-8 w-8 p-0 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex gap-3 pt-2">
                   <Button
                     variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal mt-2",
-                      !selectedDate && "text-muted-foreground"
-                    )}
+                    onClick={() => setEventOpen(false)}
+                    className="flex-1 bg-background/50 border-border/30 hover:bg-background/70"
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                    Cancel
                   </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={setSelectedDate}
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            <div>
-              <Label htmlFor="event-time" className="text-sm font-medium text-foreground">
-                Time
-              </Label>
-              <Input
-                id="event-time"
-                type="time"
-                value={eventTime}
-                onChange={(e) => setEventTime(e.target.value)}
-                className="mt-2"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="event-message" className="text-sm font-medium text-foreground">
-                Event Message
-              </Label>
-              <Input
-                id="event-message"
-                placeholder="Enter your event message..."
-                value={eventMessage}
-                onChange={(e) => setEventMessage(e.target.value)}
-                className="mt-2"
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-foreground">
-                Motivational Track
-              </Label>
-              <Select value={selectedTrack} onValueChange={setSelectedTrack}>
-                <SelectTrigger className="mt-2">
-                  <SelectValue placeholder="Choose a motivational track" />
-                </SelectTrigger>
-                <SelectContent>
-                  {defaultTracks.map((track) => (
-                    <SelectItem key={track.id} value={track.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{track.name}</span>
-                        <span className="text-xs text-muted-foreground capitalize">
-                          {track.category} • {track.duration}s
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <Label className="text-sm font-medium text-foreground">
-                  Reminder Times
-                </Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={addCustomReminder}
-                  className="h-8 px-2"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+                  <Button
+                    onClick={saveEventAlarm}
+                    disabled={!selectedDate || !eventMessage}
+                    className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
+                  >
+                    <Star className="h-4 w-4 mr-2" />
+                    Save Event
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-3 max-h-32 overflow-y-auto">
-                {reminders.map((reminder, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Checkbox
-                      checked={reminder.enabled}
-                      onCheckedChange={(checked) => 
-                        updateReminder(index, 'enabled', checked)
-                      }
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Time"
-                      value={reminder.time}
-                      onChange={(e) => updateReminder(index, 'time', e.target.value)}
-                      className="w-16 h-8"
-                      min="1"
-                    />
-                    <Select
-                      value={reminder.unit}
-                      onValueChange={(value) => updateReminder(index, 'unit', value)}
-                    >
-                      <SelectTrigger className="w-24 h-8">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="minutes">min</SelectItem>
-                        <SelectItem value="hours">hrs</SelectItem>
-                        <SelectItem value="days">days</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <span className="text-xs text-muted-foreground">before</span>
-                    {reminders.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeReminder(index)}
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive/90"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex gap-2 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setEventOpen(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={saveEventAlarm}
-                disabled={!selectedDate || !eventMessage}
-                className="flex-1"
-              >
-                Save Event
-              </Button>
             </div>
           </div>
         </DialogContent>
