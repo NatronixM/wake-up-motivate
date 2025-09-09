@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Moon, Sun, Calendar, TrendingUp, Settings, Clock, Activity } from "lucide-react";
 import { BedtimeReminderDialog } from "./BedtimeReminderDialog";
+import { SnoringDetector } from "./SnoringDetector";
+import { DetailedMedicalReport } from "./DetailedMedicalReport";
 import { analyzeSleep, generateMockSleepData, type SleepAnalysis } from "@/utils/sleepAnalysis";
 import sleepExcellentImg from "@/assets/sleep-excellent.jpg";
 import sleepGoodImg from "@/assets/sleep-good.jpg";
@@ -58,6 +61,9 @@ export const SleepTracker = ({ onSetAlarm }: SleepTrackerProps) => {
   });
   const [showBedtimeDialog, setShowBedtimeDialog] = useState(false);
   const [sleepAnalysis, setSleepAnalysis] = useState<SleepAnalysis | null>(null);
+  const [snoringActive, setSnoringActive] = useState(false);
+  const [snoringData, setSnoringData] = useState<any>(null);
+  const [showMedicalReport, setShowMedicalReport] = useState(false);
 
   const currentDate = new Date();
   const formatDate = (date: Date) => {
@@ -365,11 +371,19 @@ export const SleepTracker = ({ onSetAlarm }: SleepTrackerProps) => {
         </div>
         
         <div className="space-y-2">
-          <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center mx-auto">
-            <span className="text-white">--</span>
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center mx-auto ${
+            snoringData ? 'bg-red-500' : 'bg-gray-600'
+          }`}>
+            {snoringData ? (
+              <Activity className="h-6 w-6 text-white" />
+            ) : (
+              <span className="text-white">--</span>
+            )}
           </div>
           <div className="text-xs text-muted-foreground">Snoring</div>
-          <div className="text-xs font-medium">--</div>
+          <div className="text-xs font-medium">
+            {snoringData ? `${snoringData.episodes}` : '--'}
+          </div>
         </div>
       </div>
 
@@ -382,7 +396,10 @@ export const SleepTracker = ({ onSetAlarm }: SleepTrackerProps) => {
               {sleepAnalysis.medicalInsight}
             </p>
             
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-8 py-3 w-full">
+            <Button 
+              onClick={() => setShowMedicalReport(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-8 py-3 w-full"
+            >
               <Activity className="h-4 w-4 mr-2" />
               View Detailed Report
             </Button>
@@ -390,12 +407,40 @@ export const SleepTracker = ({ onSetAlarm }: SleepTrackerProps) => {
         </Card>
       )}
 
+      {/* Snoring Detection */}
+      <SnoringDetector
+        isActive={snoringActive}
+        onToggle={() => setSnoringActive(!snoringActive)}
+        onSnoringDetected={setSnoringData}
+      />
+
       <BedtimeReminderDialog
         open={showBedtimeDialog}
         onOpenChange={setShowBedtimeDialog}
         reminder={bedtimeReminder}
         onSave={handleBedtimeReminderSave}
       />
+
+      {/* Detailed Medical Report Dialog */}
+      <Dialog open={showMedicalReport} onOpenChange={setShowMedicalReport}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Detailed Medical Report</DialogTitle>
+          </DialogHeader>
+          {sleepAnalysis && (
+            <DetailedMedicalReport
+              data={{
+                sleepDuration: sleepAnalysis.duration,
+                sleepQuality: sleepAnalysis.quality,
+                wakeUpSpeed: 'Medium', // This would come from actual data
+                snoring: snoringData,
+                energyLevel: 7 // This would come from actual data
+              }}
+              onClose={() => setShowMedicalReport(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
