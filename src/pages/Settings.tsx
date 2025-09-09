@@ -58,13 +58,13 @@ export const Settings = () => {
       icon: MessageSquare,
       title: "Send feedback",
       hasArrow: true,
-      action: () => console.log("Send feedback")
+      action: () => window.location.href = "mailto:asuite20@gmail.com?subject=Feedback"
     },
     {
       icon: FileText,
       title: "Report",
       hasArrow: true,
-      action: () => console.log("Report")
+      action: () => window.location.href = "mailto:asuite20@gmail.com?subject=Report"
     },
     {
       icon: Info,
