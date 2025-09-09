@@ -287,16 +287,6 @@ export const Settings = () => {
               </div>
             </div>
 
-            {/* Event */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-secondary p-2 rounded-lg">
-                  <CalendarIcon className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <span className="font-medium text-foreground">Event</span>
-              </div>
-              <span className="text-xs text-muted-foreground">See Events tab</span>
-            </div>
           </div>
         </Card>
 
