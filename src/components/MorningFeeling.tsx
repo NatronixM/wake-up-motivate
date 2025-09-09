@@ -30,6 +30,7 @@ export const MorningFeeling = () => {
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [currentDate] = useState(new Date());
   const [showBirthdateDialog, setShowBirthdateDialog] = useState(false);
+  const [showRecommendationsDialog, setShowRecommendationsDialog] = useState(false);
   const [tempBirthDate, setTempBirthDate] = useState("");
   const [sleepMetrics, setSleepMetrics] = useState<SleepMetrics>({
     hoursSlept: 7.5,
@@ -240,14 +241,14 @@ export const MorningFeeling = () => {
                     <TrendingUp className="h-4 w-4" />
                     Recommendations
                   </h4>
-                  <Dialog>
+                  <Dialog open={showRecommendationsDialog} onOpenChange={setShowRecommendationsDialog}>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" className="text-xs">
                         <BookOpen className="h-3 w-3 mr-1" />
                         View All Tips
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[80vh]">
+                    <DialogContent className="max-w-4xl max-h-[90vh]">
                       <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
                           <BookOpen className="h-5 w-5" />
