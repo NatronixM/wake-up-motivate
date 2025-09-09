@@ -28,6 +28,7 @@ interface Alarm {
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('alarm');
+  const [editingAlarm, setEditingAlarm] = useState<Alarm | null>(null);
   const [alarms, setAlarms] = useState<Alarm[]>([
     {
       id: '1',
@@ -73,7 +74,10 @@ const Index = () => {
   };
 
   const handleEditAlarm = (id: string) => {
-    toast.info("Edit alarm feature coming soon!");
+    const alarm = alarms.find(a => a.id === id);
+    if (alarm) {
+      setEditingAlarm(alarm);
+    }
   };
 
   const handleDeleteAlarm = (id: string) => {
@@ -88,6 +92,19 @@ const Index = () => {
     };
     setAlarms(prev => [...prev, alarm]);
     toast.success("Alarm created successfully!");
+  };
+
+  const handleUpdateAlarm = (updatedAlarm: Omit<Alarm, 'id'>) => {
+    if (editingAlarm) {
+      const updatedAlarms = alarms.map(alarm => 
+        alarm.id === editingAlarm.id 
+          ? { ...updatedAlarm, id: editingAlarm.id }
+          : alarm
+      );
+      setAlarms(updatedAlarms);
+      setEditingAlarm(null);
+      toast.success("Alarm updated successfully!");
+    }
   };
 
   if (activeTab === 'settings') {
@@ -180,7 +197,12 @@ const Index = () => {
 
         {/* Add Alarm Button */}
         <div className="flex justify-center pt-6">
-          <AddAlarmDialog onAddAlarm={handleAddAlarm} />
+            <AddAlarmDialog 
+              onAddAlarm={handleAddAlarm} 
+              editingAlarm={editingAlarm}
+              onUpdateAlarm={handleUpdateAlarm}
+              onCancelEdit={() => setEditingAlarm(null)}
+            />
         </div>
 
         {/* App Slogan */}

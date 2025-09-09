@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { TimePickerDialog } from "./TimePickerDialog";
 import { defaultTracks } from "@/data/motivationalTracks";
 
+interface Alarm {
+  id: string;
+  time: string;
+  label?: string;
+  isActive: boolean;
+  repeatDays?: string[];
+  soundName?: string;
+  missionEnabled?: boolean;
+  missionCount?: number;
+  snoozeEnabled?: boolean;
+  snoozeDuration?: number;
+  volume?: number;
+}
+
 interface AddAlarmDialogProps {
   onAddAlarm: (alarm: {
     time: string;
@@ -29,16 +43,42 @@ interface AddAlarmDialogProps {
     snoozeDuration?: number;
     volume?: number;
   }) => void;
+  editingAlarm?: Alarm | null;
+  onUpdateAlarm?: (alarm: {
+    time: string;
+    label: string;
+    isActive: boolean;
+    repeatDays: string[];
+    soundName: string;
+    missionEnabled?: boolean;
+    missionCount?: number;
+    snoozeEnabled?: boolean;
+    snoozeDuration?: number;
+    volume?: number;
+  }) => void;
+  onCancelEdit?: () => void;
 }
 
-export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
+export const AddAlarmDialog = ({ 
+  onAddAlarm, 
+  editingAlarm, 
+  onUpdateAlarm, 
+  onCancelEdit 
+}: AddAlarmDialogProps) => {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [timePickerOpen, setTimePickerOpen] = useState(false);
-  const [time, setTime] = useState("07:00");
-  const [label, setLabel] = useState("");
-  const [isActive, setIsActive] = useState(true);
-  const [repeatDays, setRepeatDays] = useState<string[]>([]);
-  const [soundName, setSoundName] = useState("Rise & Shine");
+  const [time, setTime] = useState(editingAlarm?.time || "07:00");
+  const [label, setLabel] = useState(editingAlarm?.label || "");
+  const [isActive, setIsActive] = useState(editingAlarm?.isActive ?? true);
+  const [repeatDays, setRepeatDays] = useState<string[]>(editingAlarm?.repeatDays || []);
+  const [soundName, setSoundName] = useState(editingAlarm?.soundName || "Rise & Shine");
+
+  // Open the appropriate dialog when editing
+  useEffect(() => {
+    if (editingAlarm) {
+      setTimePickerOpen(true);
+    }
+  }, [editingAlarm]);
 
   const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -71,7 +111,18 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
   };
 
   const handleAdvancedSave = (alarmData: any) => {
-    onAddAlarm(alarmData);
+    if (editingAlarm && onUpdateAlarm) {
+      onUpdateAlarm(alarmData);
+    } else {
+      onAddAlarm(alarmData);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setTimePickerOpen(false);
+    if (onCancelEdit) {
+      onCancelEdit();
+    }
   };
 
   const openAdvancedEditor = () => {
@@ -189,7 +240,7 @@ export const AddAlarmDialog = ({ onAddAlarm }: AddAlarmDialogProps) => {
 
       <TimePickerDialog
         open={timePickerOpen}
-        onOpenChange={setTimePickerOpen}
+        onOpenChange={editingAlarm ? handleCancelEdit : setTimePickerOpen}
         initialTime={time}
         initialLabel={label}
         initialRepeatDays={repeatDays}
