@@ -1,4 +1,4 @@
-import { Clock, Moon, Sun, BarChart3, Settings } from "lucide-react";
+import { Clock, Moon, Sun, BarChart3, Calendar, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface BottomNavigationProps {
@@ -12,6 +12,7 @@ export const BottomNavigation = ({ activeTab, onTabChange }: BottomNavigationPro
     { id: 'sleep', icon: Moon, label: 'Sleep' },
     { id: 'morning', icon: Sun, label: 'Morning' },
     { id: 'inspiration', icon: BarChart3, label: 'Inspiration' },
+    { id: 'calendar', icon: Calendar, label: 'Events' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
 

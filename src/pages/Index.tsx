@@ -5,6 +5,7 @@ import { AddAlarmDialog } from "@/components/AddAlarmDialog";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { AlarmDismissalScreen } from "@/components/AlarmDismissalScreen";
 import { Settings } from "./Settings";
+import { EventCalendar } from "./EventCalendar";
 import { SleepTracker } from "@/components/SleepTracker";
 import { MorningFeeling } from "@/components/MorningFeeling";
 import { Inspiration } from "@/components/Inspiration";
@@ -199,6 +200,15 @@ const Index = () => {
     return (
       <div>
         <Inspiration />
+        <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+    );
+  }
+
+  if (activeTab === 'calendar') {
+    return (
+      <div>
+        <EventCalendar />
         <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
