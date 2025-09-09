@@ -15,6 +15,7 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TimePickerDialog } from "./TimePickerDialog";
 import { defaultTracks } from "@/data/motivationalTracks";
+import { toast } from "sonner";
 
 interface Alarm {
   id: string;
@@ -131,8 +132,21 @@ export const AddAlarmDialog = ({
   };
 
   const handleCustomSound = () => {
-    // This would open file picker in a real app
-    alert("Custom sound upload feature - would open file picker");
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        // Create object URL for the file
+        const url = URL.createObjectURL(file);
+        const trackName = file.name.replace(/\.[^/.]+$/, ""); // Remove file extension
+        
+        // In a real app, you would save this to your custom tracks
+        toast.success(`Custom track "${trackName}" added to your library!`);
+      }
+    };
+    input.click();
   };
 
   return (

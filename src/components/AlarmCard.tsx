@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Clock, Volume2, Repeat, Zap } from "lucide-react";
 import { AlarmContextMenu } from "./AlarmContextMenu";
 import { Badge } from "@/components/ui/badge";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
+import { defaultTracks } from "@/data/motivationalTracks";
 
 interface AlarmCardProps {
   id: string;
@@ -18,6 +20,8 @@ interface AlarmCardProps {
   onToggle: (id: string, active: boolean) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
+  onSkipOnce?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
 }
 
 export const AlarmCard = ({
@@ -32,8 +36,11 @@ export const AlarmCard = ({
   onToggle,
   onEdit,
   onDelete,
+  onSkipOnce,
+  onDuplicate,
 }: AlarmCardProps) => {
   const [isEnabled, setIsEnabled] = useState(isActive);
+  const { play, stop, isPlaying } = useAudioPlayer();
 
   const handleToggle = (checked: boolean) => {
     setIsEnabled(checked);
@@ -41,15 +48,27 @@ export const AlarmCard = ({
   };
 
   const handlePreview = () => {
-    alert(`Playing preview of ${soundName}`);
+    // Find the track by name
+    const track = defaultTracks.find(t => t.name === soundName);
+    if (track) {
+      if (isPlaying) {
+        stop();
+      } else {
+        play(track.url, 0.5);
+      }
+    }
   };
 
   const handleSkipOnce = () => {
-    alert("Alarm skipped for next occurrence");
+    if (onSkipOnce) {
+      onSkipOnce(id);
+    }
   };
 
   const handleDuplicate = () => {
-    alert("Alarm duplicated");
+    if (onDuplicate) {
+      onDuplicate(id);
+    }
   };
 
   const formatTime = (timeString: string) => {

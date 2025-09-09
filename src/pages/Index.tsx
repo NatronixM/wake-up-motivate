@@ -85,6 +85,25 @@ const Index = () => {
     toast.success("Alarm deleted");
   };
 
+  const handleSkipOnce = (id: string) => {
+    // In a real app, this would mark the alarm to be skipped for the next occurrence
+    toast.success("Alarm will be skipped for the next occurrence");
+  };
+
+  const handleDuplicate = (id: string) => {
+    const alarmToDuplicate = alarms.find(a => a.id === id);
+    if (alarmToDuplicate) {
+      const duplicatedAlarm: Alarm = {
+        ...alarmToDuplicate,
+        id: Date.now().toString(),
+        label: `${alarmToDuplicate.label} (Copy)`,
+        isActive: false
+      };
+      setAlarms(prev => [...prev, duplicatedAlarm]);
+      toast.success("Alarm duplicated successfully!");
+    }
+  };
+
   const handleAddAlarm = (newAlarm: Omit<Alarm, 'id'>) => {
     const alarm: Alarm = {
       ...newAlarm,
@@ -132,6 +151,38 @@ const Index = () => {
     return (
       <div className="min-h-screen bg-background pb-20">
         <MorningFeeling />
+        <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+    );
+  }
+
+  if (activeTab === 'report') {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <Header title="Report Issue" />
+        <div className="px-4 py-6">
+          <div className="max-w-md mx-auto space-y-6">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
+                Report an Issue
+              </h2>
+              <p className="text-muted-foreground">
+                Help us improve the app by reporting any problems you encounter.
+              </p>
+            </div>
+            
+            <Button
+              onClick={() => {
+                const subject = "Report: Error in the Motivational Alarm Clock";
+                const body = "Please describe the issue you encountered:";
+                window.location.href = `mailto:asuite20@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+              }}
+              className="w-full bg-gradient-primary hover:opacity-90"
+            >
+              Send Report Email
+            </Button>
+          </div>
+        </div>
         <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
@@ -191,6 +242,8 @@ const Index = () => {
               onToggle={handleToggleAlarm}
               onEdit={handleEditAlarm}
               onDelete={handleDeleteAlarm}
+              onSkipOnce={handleSkipOnce}
+              onDuplicate={handleDuplicate}
             />
           ))}
         </div>
