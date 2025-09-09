@@ -5,11 +5,15 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Preferences } from "@capacitor/preferences";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { defaultTracks, MotivationalTrack } from "@/data/motivationalTracks";
 import { 
   ChevronRight, 
   Crown, 
@@ -22,7 +26,8 @@ import {
   X,
   ArrowRight,
   ArrowLeft,
-  Plus
+  Plus,
+  Trash2
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PermissionsManager } from "@/utils/permissions";
@@ -36,6 +41,12 @@ export const Settings = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [eventMessage, setEventMessage] = useState("");
   const [eventTime, setEventTime] = useState("09:00");
+  const [selectedTrack, setSelectedTrack] = useState<string>(defaultTracks[0].id);
+  const [reminders, setReminders] = useState([
+    { enabled: true, time: "15", unit: "minutes" },
+    { enabled: false, time: "1", unit: "hours" },
+    { enabled: false, time: "1", unit: "days" }
+  ]);
 
   // Request all necessary permissions on component mount
   useEffect(() => {
@@ -140,19 +151,66 @@ export const Settings = () => {
     setTutorialStep(0);
   };
 
-  const saveEventAlarm = () => {
+  const saveEventAlarm = async () => {
     if (selectedDate && eventMessage && eventTime) {
-      // Here you would typically save to localStorage or backend
-      console.log("Event alarm saved:", { 
+      const eventData = { 
         date: selectedDate, 
         message: eventMessage, 
-        time: eventTime 
-      });
-      setEventOpen(false);
-      setSelectedDate(undefined);
-      setEventMessage("");
-      setEventTime("09:00");
+        time: eventTime,
+        track: selectedTrack,
+        reminders: reminders.filter(r => r.enabled)
+      };
+      
+      // Save to Capacitor preferences (acts as local storage)
+      try {
+        const existingEvents = await Preferences.get({ key: 'eventAlarms' });
+        const events = existingEvents.value ? JSON.parse(existingEvents.value) : [];
+        events.push({ ...eventData, id: Date.now().toString() });
+        
+        await Preferences.set({ 
+          key: 'eventAlarms', 
+          value: JSON.stringify(events) 
+        });
+        
+        // Sync with native calendar if possible
+        syncToNativeCalendar(eventData);
+        
+        console.log("Event alarm saved:", eventData);
+        
+        // Reset form
+        setEventOpen(false);
+        setSelectedDate(undefined);
+        setEventMessage("");
+        setEventTime("09:00");
+        setSelectedTrack(defaultTracks[0].id);
+        setReminders([
+          { enabled: true, time: "15", unit: "minutes" },
+          { enabled: false, time: "1", unit: "hours" },
+          { enabled: false, time: "1", unit: "days" }
+        ]);
+      } catch (error) {
+        console.error('Failed to save event alarm:', error);
+      }
     }
+  };
+
+  const syncToNativeCalendar = async (eventData: any) => {
+    // This would use Capacitor Calendar plugin in a real implementation
+    console.log('Syncing to native calendar:', eventData);
+  };
+
+  const updateReminder = (index: number, field: string, value: any) => {
+    const newReminders = [...reminders];
+    newReminders[index] = { ...newReminders[index], [field]: value };
+    setReminders(newReminders);
+  };
+
+  const addCustomReminder = () => {
+    setReminders([...reminders, { enabled: true, time: "30", unit: "minutes" }]);
+  };
+
+  const removeReminder = (index: number) => {
+    setReminders(reminders.filter((_, i) => i !== index));
   };
 
   return (
@@ -412,6 +470,91 @@ export const Settings = () => {
                 onChange={(e) => setEventMessage(e.target.value)}
                 className="mt-2"
               />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium text-foreground">
+                Motivational Track
+              </Label>
+              <Select value={selectedTrack} onValueChange={setSelectedTrack}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Choose a motivational track" />
+                </SelectTrigger>
+                <SelectContent>
+                  {defaultTracks.map((track) => (
+                    <SelectItem key={track.id} value={track.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{track.name}</span>
+                        <span className="text-xs text-muted-foreground capitalize">
+                          {track.category} • {track.duration}s
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <Label className="text-sm font-medium text-foreground">
+                  Reminder Times
+                </Label>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={addCustomReminder}
+                  className="h-8 px-2"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="space-y-3 max-h-32 overflow-y-auto">
+                {reminders.map((reminder, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Checkbox
+                      checked={reminder.enabled}
+                      onCheckedChange={(checked) => 
+                        updateReminder(index, 'enabled', checked)
+                      }
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Time"
+                      value={reminder.time}
+                      onChange={(e) => updateReminder(index, 'time', e.target.value)}
+                      className="w-16 h-8"
+                      min="1"
+                    />
+                    <Select
+                      value={reminder.unit}
+                      onValueChange={(value) => updateReminder(index, 'unit', value)}
+                    >
+                      <SelectTrigger className="w-24 h-8">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="minutes">min</SelectItem>
+                        <SelectItem value="hours">hrs</SelectItem>
+                        <SelectItem value="days">days</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <span className="text-xs text-muted-foreground">before</span>
+                    {reminders.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeReminder(index)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive/90"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
             
             <div className="flex gap-2 pt-4">
