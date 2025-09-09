@@ -3,13 +3,14 @@ import { Header } from "@/components/Header";
 import { AlarmCard } from "@/components/AlarmCard";
 import { AddAlarmDialog } from "@/components/AddAlarmDialog";
 import { BottomNavigation } from "@/components/BottomNavigation";
+import { AlarmDismissalScreen } from "@/components/AlarmDismissalScreen";
 import { Settings } from "./Settings";
 import { SleepTracker } from "@/components/SleepTracker";
 import { MorningFeeling } from "@/components/MorningFeeling";
 import { ProBanner } from "@/components/ProBanner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, TrendingUp } from "lucide-react";
+import { Calendar, TrendingUp, Play } from "lucide-react";
 import { toast } from "sonner";
 
 interface Alarm {
@@ -29,6 +30,7 @@ interface Alarm {
 const Index = () => {
   const [activeTab, setActiveTab] = useState('alarm');
   const [editingAlarm, setEditingAlarm] = useState<Alarm | null>(null);
+  const [activeAlarm, setActiveAlarm] = useState<Alarm | null>(null);
   const [alarms, setAlarms] = useState<Alarm[]>([
     {
       id: '1',
@@ -124,6 +126,21 @@ const Index = () => {
       setEditingAlarm(null);
       toast.success("Alarm updated successfully!");
     }
+  };
+
+  const handleTestAlarm = (alarm: Alarm) => {
+    setActiveAlarm(alarm);
+    toast.success("Alarm triggered! Complete missions to dismiss.");
+  };
+
+  const handleDismissAlarm = () => {
+    setActiveAlarm(null);
+    toast.success("Alarm dismissed! Have a great day! 🌅");
+  };
+
+  const handleSnoozeAlarm = () => {
+    setActiveAlarm(null);
+    toast.info("Alarm snoozed for 5 minutes");
   };
 
   if (activeTab === 'settings') {
@@ -229,22 +246,33 @@ const Index = () => {
         {/* Alarms List */}
         <div className="space-y-4">
           {alarms.map((alarm) => (
-            <AlarmCard
-              key={alarm.id}
-              id={alarm.id}
-              time={alarm.time}
-              label={alarm.label}
-              isActive={alarm.isActive}
-              repeatDays={alarm.repeatDays}
-              soundName={alarm.soundName}
-              missionEnabled={alarm.missionEnabled}
-              missionCount={alarm.missionCount}
-              onToggle={handleToggleAlarm}
-              onEdit={handleEditAlarm}
-              onDelete={handleDeleteAlarm}
-              onSkipOnce={handleSkipOnce}
-              onDuplicate={handleDuplicate}
-            />
+            <div key={alarm.id} className="space-y-2">
+              <AlarmCard
+                id={alarm.id}
+                time={alarm.time}
+                label={alarm.label}
+                isActive={alarm.isActive}
+                repeatDays={alarm.repeatDays}
+                soundName={alarm.soundName}
+                missionEnabled={alarm.missionEnabled}
+                missionCount={alarm.missionCount}
+                onToggle={handleToggleAlarm}
+                onEdit={handleEditAlarm}
+                onDelete={handleDeleteAlarm}
+                onSkipOnce={handleSkipOnce}
+                onDuplicate={handleDuplicate}
+              />
+              {/* Test Alarm Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleTestAlarm(alarm)}
+                className="w-full text-xs"
+              >
+                <Play className="h-3 w-3 mr-1" />
+                Test Alarm {alarm.missionEnabled ? `(${alarm.missionCount} missions)` : '(No missions)'}
+              </Button>
+            </div>
           ))}
         </div>
 
@@ -270,6 +298,19 @@ const Index = () => {
       </div>
 
       <BottomNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+      
+      {/* Alarm Dismissal Screen */}
+      {activeAlarm && (
+        <AlarmDismissalScreen
+          alarmId={activeAlarm.id}
+          alarmLabel={activeAlarm.label}
+          alarmTime={activeAlarm.time}
+          missionEnabled={activeAlarm.missionEnabled || false}
+          missionCount={activeAlarm.missionCount || 0}
+          onDismiss={handleDismissAlarm}
+          onSnooze={handleSnoozeAlarm}
+        />
+      )}
     </div>
   );
 };
