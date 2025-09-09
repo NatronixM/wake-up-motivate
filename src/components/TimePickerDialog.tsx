@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Volume2, VolumeX, Smartphone } from "lucide-react";
+import { Volume2, VolumeX, Smartphone, Calculator, Brain, Vibrate, Camera } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { TrackSelector } from "./TrackSelector";
 import { WallpaperSelector } from "./WallpaperSelector";
@@ -107,11 +107,11 @@ export const TimePickerDialog = ({
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const missionTypes = [
-    { name: "Math Problems", icon: "🧮", count: missionCount },
-    { name: "Memory Game", icon: "🧠", count: missionCount },
-    { name: "Barcode Scan", icon: "📱", count: missionCount },
-    { name: "Shake Phone", icon: "📳", count: missionCount },
-    { name: "Photo Taking", icon: "📷", count: missionCount },
+    { name: "Math Problems", icon: Calculator, count: missionCount },
+    { name: "Memory Game", icon: Brain, count: missionCount },
+    { name: "Barcode Scan", icon: Smartphone, count: missionCount },
+    { name: "Shake Phone", icon: Vibrate, count: missionCount },
+    { name: "Photo Taking", icon: Camera, count: missionCount },
   ];
 
   const handleDayToggle = (dayIndex: number) => {
@@ -219,14 +219,17 @@ export const TimePickerDialog = ({
               
               {missionEnabled && (
                 <div className="grid grid-cols-3 gap-3">
-                  {missionTypes.slice(0, 3).map((mission, index) => (
-                    <Card key={mission.name} className={`p-3 text-center border ${
-                      index === 0 ? 'bg-primary/20 border-primary' : 'border-dashed border-border'
-                    }`}>
-                      <div className="text-2xl mb-1">{mission.icon}</div>
-                      <div className="text-xs">{mission.count} time(s)</div>
-                    </Card>
-                  ))}
+                  {missionTypes.slice(0, 3).map((mission, index) => {
+                    const IconComponent = mission.icon;
+                    return (
+                      <Card key={mission.name} className={`p-3 text-center border ${
+                        index === 0 ? 'bg-primary/20 border-primary' : 'border-dashed border-border'
+                      }`}>
+                        <IconComponent className="h-8 w-8 mx-auto mb-2 text-primary" />
+                        <div className="text-xs">{mission.count} time(s)</div>
+                      </Card>
+                    );
+                  })}
                 </div>
               )}
               
@@ -387,22 +390,25 @@ export const TimePickerDialog = ({
                 <Label className="text-sm mb-2 block">Check type</Label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    { value: 'math', label: 'Math', icon: '🧮' },
-                    { value: 'memory', label: 'Memory', icon: '🧠' },
-                    { value: 'shake', label: 'Shake', icon: '📳' },
-                    { value: 'photo', label: 'Photo', icon: '📷' },
-                  ].map((type) => (
-                    <Button
-                      key={type.value}
-                      variant={wakeUpCheckType === type.value ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setWakeUpCheckType(type.value as any)}
-                      className="justify-start gap-2"
-                    >
-                      <span>{type.icon}</span>
-                      <span>{type.label}</span>
-                    </Button>
-                  ))}
+                    { value: 'math', label: 'Math', icon: Calculator },
+                    { value: 'memory', label: 'Memory', icon: Brain },
+                    { value: 'shake', label: 'Shake', icon: Vibrate },
+                    { value: 'photo', label: 'Photo', icon: Camera },
+                  ].map((type) => {
+                    const IconComponent = type.icon;
+                    return (
+                      <Button
+                        key={type.value}
+                        variant={wakeUpCheckType === type.value ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setWakeUpCheckType(type.value as any)}
+                        className="justify-start gap-2"
+                      >
+                        <IconComponent className="h-4 w-4" />
+                        <span>{type.label}</span>
+                      </Button>
+                    );
+                  })}
                 </div>
               </div>
             )}
