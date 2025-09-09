@@ -2,28 +2,57 @@ import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import { 
   ChevronRight, 
   Crown, 
   Shield, 
-  Calendar,
+  Calendar as CalendarIcon,
   HelpCircle,
   MessageSquare,
   FileText,
   Info,
   X,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  Plus
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { PermissionsManager } from "@/utils/permissions";
 
 export const Settings = () => {
   const [generalOpen, setGeneralOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [eventOpen, setEventOpen] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [eventMessage, setEventMessage] = useState("");
+  const [eventTime, setEventTime] = useState("09:00");
+
+  // Request all necessary permissions on component mount
+  useEffect(() => {
+    const requestPermissions = async () => {
+      try {
+        await PermissionsManager.requestAllAlarmPermissions();
+        // Request screen wake lock to prevent power-off
+        if ('wakeLock' in navigator) {
+          await (navigator as any).wakeLock.request('screen');
+        }
+      } catch (error) {
+        console.error('Failed to request permissions:', error);
+      }
+    };
+    
+    requestPermissions();
+  }, []);
 
   const tutorialSteps = [
     {
@@ -111,6 +140,21 @@ export const Settings = () => {
     setTutorialStep(0);
   };
 
+  const saveEventAlarm = () => {
+    if (selectedDate && eventMessage && eventTime) {
+      // Here you would typically save to localStorage or backend
+      console.log("Event alarm saved:", { 
+        date: selectedDate, 
+        message: eventMessage, 
+        time: eventTime 
+      });
+      setEventOpen(false);
+      setSelectedDate(undefined);
+      setEventMessage("");
+      setEventTime("09:00");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header title="Settings" />
@@ -173,11 +217,18 @@ export const Settings = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="bg-secondary p-2 rounded-lg">
-                  <Calendar className="h-5 w-5 text-muted-foreground" />
+                  <CalendarIcon className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <span className="font-medium text-foreground">Event</span>
               </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setEventOpen(true)}
+                className="h-8 w-8 p-0"
+              >
+                <Plus className="h-4 w-4 text-muted-foreground" />
+              </Button>
             </div>
           </div>
         </Card>
@@ -295,6 +346,91 @@ export const Settings = () => {
               and peak performance in all areas of your life.
             </DialogDescription>
           </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Event Calendar Dialog */}
+      <Dialog open={eventOpen} onOpenChange={setEventOpen}>
+        <DialogContent className="bg-card border-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Create Event Alarm</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Select a date and set a custom alarm for your event.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="event-date" className="text-sm font-medium text-foreground">
+                Select Date
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal mt-2",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            <div>
+              <Label htmlFor="event-time" className="text-sm font-medium text-foreground">
+                Time
+              </Label>
+              <Input
+                id="event-time"
+                type="time"
+                value={eventTime}
+                onChange={(e) => setEventTime(e.target.value)}
+                className="mt-2"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="event-message" className="text-sm font-medium text-foreground">
+                Event Message
+              </Label>
+              <Input
+                id="event-message"
+                placeholder="Enter your event message..."
+                value={eventMessage}
+                onChange={(e) => setEventMessage(e.target.value)}
+                className="mt-2"
+              />
+            </div>
+            
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setEventOpen(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={saveEventAlarm}
+                disabled={!selectedDate || !eventMessage}
+                className="flex-1"
+              >
+                Save Alarm
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
