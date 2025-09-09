@@ -14,6 +14,7 @@ import { Preferences } from "@capacitor/preferences";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { defaultTracks, MotivationalTrack } from "@/data/motivationalTracks";
+import { useMotivationalQuotes } from "@/hooks/useMotivationalQuotes";
 import { 
   Calendar as CalendarIcon,
   Plus,
@@ -24,7 +25,8 @@ import {
   Bell,
   Sparkles,
   Star,
-  Heart
+  Heart,
+  RefreshCw
 } from "lucide-react";
 
 interface EventAlarm {
@@ -48,6 +50,9 @@ export const EventCalendar = () => {
     { enabled: false, time: "1", unit: "hours" },
     { enabled: false, time: "1", unit: "days" }
   ]);
+
+  // Use the motivational quotes hook
+  const { quote, isLoading: quoteLoading, refreshQuote } = useMotivationalQuotes();
 
   // Load events on component mount
   useEffect(() => {
@@ -158,12 +163,38 @@ export const EventCalendar = () => {
               <Sparkles className="h-8 w-8 text-primary" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-2">
+          <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
             Your Motivation Calendar
           </h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Schedule events with custom motivational alarms to stay on track with your goals
-          </p>
+          
+          {/* Dynamic Motivational Quote */}
+          <div className="bg-gradient-to-r from-background/50 to-background/20 rounded-xl p-6 border border-border/30 shadow-lg max-w-2xl mx-auto relative">
+            <div className="absolute top-3 right-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={refreshQuote}
+                disabled={quoteLoading}
+                className="h-8 w-8 p-0 hover:bg-primary/10 transition-colors"
+              >
+                <RefreshCw className={cn("h-4 w-4 text-primary", quoteLoading && "animate-spin")} />
+              </Button>
+            </div>
+            
+            <div className="space-y-3">
+              <div className="text-lg font-medium text-foreground leading-relaxed italic">
+                "{quote.text}"
+              </div>
+              {quote.author && (
+                <div className="text-sm text-muted-foreground font-medium">
+                  — {quote.author}
+                </div>
+              )}
+            </div>
+            
+            <div className="absolute -top-2 -left-2 w-4 h-4 bg-primary/20 rounded-full"></div>
+            <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-accent/20 rounded-full"></div>
+          </div>
         </div>
 
         {/* Calendar */}
