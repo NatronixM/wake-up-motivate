@@ -3,56 +3,73 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { 
   ChevronRight, 
   Crown, 
   Shield, 
   Calendar,
-  Bell,
   HelpCircle,
   MessageSquare,
   FileText,
   Info,
-  Zap
+  X,
+  ArrowRight,
+  ArrowLeft
 } from "lucide-react";
+import { useState } from "react";
 
 export const Settings = () => {
+  const [generalOpen, setGeneralOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(0);
+
+  const tutorialSteps = [
+    {
+      title: "Welcome to Your Motivation Hub!",
+      content: "This app is designed to help you wake up refreshed, stay motivated, and achieve peak performance. Let's walk through the main features.",
+      highlight: "bottom-navigation"
+    },
+    {
+      title: "Sleep Tracking",
+      content: "Track your sleep quality, get personalized recommendations, and analyze your sleep patterns for better rest.",
+      highlight: "sleep-tab"
+    },
+    {
+      title: "Smart Alarms",
+      content: "Set alarms with custom missions to ensure you wake up fully alert. Choose from math problems, photo missions, and more.",
+      highlight: "alarm-tab"
+    },
+    {
+      title: "Daily Inspiration",
+      content: "Access motivational quotes, fitness recommendations, financial insights, and social connection tips to fuel your success.",
+      highlight: "inspiration-tab"
+    },
+    {
+      title: "Personal Settings",
+      content: "Customize your experience, manage notifications, and access support features in the settings tab.",
+      highlight: "settings-tab"
+    },
+    {
+      title: "You're All Set!",
+      content: "Start your journey to peak performance. Remember, consistency is key to achieving your goals!",
+      highlight: "none"
+    }
+  ];
+
   const settingsItems = [
-    {
-      icon: Zap,
-      title: "Alarm optimization",
-      hasArrow: true,
-      action: () => console.log("Alarm optimization")
-    },
-    {
-      icon: Bell,
-      title: "Alarm Setting",
-      hasArrow: true,
-      action: () => console.log("Alarm settings")
-    },
-    {
-      icon: Calendar,
-      title: "Dismiss Alarm/Mission",
-      hasArrow: true,
-      action: () => console.log("Dismiss settings")
-    },
     {
       icon: FileText,
       title: "General",
       hasArrow: true,
-      action: () => console.log("General settings")
-    },
-    {
-      icon: Bell,
-      title: "Notices",
-      hasArrow: true,
-      action: () => console.log("Notices")
+      action: () => setGeneralOpen(true)
     },
     {
       icon: HelpCircle,
       title: "FAQ",
       hasArrow: true,
-      action: () => console.log("FAQ")
+      action: () => setFaqOpen(true)
     },
     {
       icon: MessageSquare,
@@ -70,9 +87,29 @@ export const Settings = () => {
       icon: Info,
       title: "About",
       hasArrow: true,
-      action: () => console.log("About")
+      action: () => setAboutOpen(true)
     },
   ];
+
+  const nextTutorialStep = () => {
+    if (tutorialStep < tutorialSteps.length - 1) {
+      setTutorialStep(tutorialStep + 1);
+    } else {
+      setFaqOpen(false);
+      setTutorialStep(0);
+    }
+  };
+
+  const prevTutorialStep = () => {
+    if (tutorialStep > 0) {
+      setTutorialStep(tutorialStep - 1);
+    }
+  };
+
+  const closeTutorial = () => {
+    setFaqOpen(false);
+    setTutorialStep(0);
+  };
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -169,6 +206,97 @@ export const Settings = () => {
           ))}
         </div>
       </div>
+
+      {/* General Dialog */}
+      <Dialog open={generalOpen} onOpenChange={setGeneralOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Version Motivated</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              You're using the latest version of our motivation and productivity app, designed to help you achieve peak performance every day.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* FAQ Tutorial Dialog */}
+      <Dialog open={faqOpen} onOpenChange={setFaqOpen}>
+        <DialogContent className="bg-card border-border max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-foreground">
+                {tutorialSteps[tutorialStep].title}
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeTutorial}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4">
+            <DialogDescription className="text-muted-foreground text-base leading-relaxed">
+              {tutorialSteps[tutorialStep].content}
+            </DialogDescription>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex gap-1">
+                {tutorialSteps.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-2 w-2 rounded-full transition-colors ${
+                      index === tutorialStep
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                {tutorialStep > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={prevTutorialStep}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  onClick={nextTutorialStep}
+                  className="flex items-center gap-2"
+                >
+                  {tutorialStep === tutorialSteps.length - 1 ? "Finish" : "Next"}
+                  {tutorialStep < tutorialSteps.length - 1 && (
+                    <ArrowRight className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* About Dialog */}
+      <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Built to be the Best</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              This app was crafted with one mission in mind: to help you become the best version of yourself. 
+              Every feature, from smart alarms to daily inspiration, is designed to push you toward excellence 
+              and peak performance in all areas of your life.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
