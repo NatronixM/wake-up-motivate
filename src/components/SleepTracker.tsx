@@ -9,7 +9,7 @@ import { Moon, Sun, Calendar, TrendingUp, Settings, Clock, Activity } from "luci
 import { BedtimeReminderDialog } from "./BedtimeReminderDialog";
 import { SnoringDetector } from "./SnoringDetector";
 import { DetailedMedicalReport } from "./DetailedMedicalReport";
-import { analyzeSleep, generateMockSleepData, type SleepAnalysis } from "@/utils/sleepAnalysis";
+import { analyzeSleep, generateMockSleepData, getExpandedSleepRecommendations, type SleepAnalysis } from "@/utils/sleepAnalysis";
 import sleepExcellentImg from "@/assets/sleep-excellent.jpg";
 import sleepGoodImg from "@/assets/sleep-good.jpg";
 import sleepFairImg from "@/assets/sleep-fair.jpg";
@@ -64,6 +64,7 @@ export const SleepTracker = ({ onSetAlarm }: SleepTrackerProps) => {
   const [snoringActive, setSnoringActive] = useState(false);
   const [snoringData, setSnoringData] = useState<any>(null);
   const [showMedicalReport, setShowMedicalReport] = useState(false);
+  const [showRecommendationsDialog, setShowRecommendationsDialog] = useState(false);
 
   const currentDate = new Date();
   const formatDate = (date: Date) => {
@@ -302,7 +303,12 @@ export const SleepTracker = ({ onSetAlarm }: SleepTrackerProps) => {
                 </div>
               ))}
             </div>
-            <Button variant="outline" size="sm" className="w-full">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full"
+              onClick={() => setShowRecommendationsDialog(true)}
+            >
               View All Tips
             </Button>
           </div>
@@ -439,6 +445,42 @@ export const SleepTracker = ({ onSetAlarm }: SleepTrackerProps) => {
               onClose={() => setShowMedicalReport(false)}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Sleep Recommendations Dialog */}
+      <Dialog open={showRecommendationsDialog} onOpenChange={setShowRecommendationsDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Comprehensive Sleep Recommendations</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {Object.entries(getExpandedSleepRecommendations()).map(([key, category]) => (
+              <Card key={key} className="bg-gradient-card border-border/50">
+                <div className="p-4 space-y-4">
+                  <h3 className="text-lg font-semibold text-foreground">{category.title}</h3>
+                  <div className="space-y-3">
+                    {category.tips.map((item, index) => (
+                      <div key={index} className="space-y-2 border-l-2 border-primary/30 pl-4">
+                        <p className="text-sm font-medium text-foreground">{item.tip}</p>
+                        <p className="text-xs text-muted-foreground italic">
+                          Clinical Evidence: {item.evidence}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            ))}
+            <div className="text-center">
+              <Button 
+                onClick={() => setShowRecommendationsDialog(false)}
+                className="bg-primary text-primary-foreground"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
