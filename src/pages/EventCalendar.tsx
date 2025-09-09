@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { defaultTracks, MotivationalTrack } from "@/data/motivationalTracks";
 import { useMotivationalQuotes } from "@/hooks/useMotivationalQuotes";
+import { BannerAd } from "@/components/BannerAd";
 import { 
   Calendar as CalendarIcon,
   Plus,
@@ -156,45 +157,9 @@ export const EventCalendar = () => {
       <Header title="Event Calendar" />
       
       <div className="px-4 space-y-8">
-        {/* Hero Section */}
-        <div className="text-center py-6">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <div className="p-3 bg-gradient-to-br from-primary/20 to-primary/10 rounded-2xl">
-              <Sparkles className="h-8 w-8 text-primary" />
-            </div>
-          </div>
-          <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent mb-4">
-            Your Motivation Calendar
-          </h2>
-          
-          {/* Dynamic Motivational Quote */}
-          <div className="bg-gradient-to-r from-background/50 to-background/20 rounded-xl p-6 border border-border/30 shadow-lg max-w-2xl mx-auto relative">
-            <div className="absolute top-3 right-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={refreshQuote}
-                disabled={quoteLoading}
-                className="h-8 w-8 p-0 hover:bg-primary/10 transition-colors"
-              >
-                <RefreshCw className={cn("h-4 w-4 text-primary", quoteLoading && "animate-spin")} />
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              <div className="text-lg font-medium text-foreground leading-relaxed italic">
-                "{quote.text}"
-              </div>
-              {quote.author && (
-                <div className="text-sm text-muted-foreground font-medium">
-                  — {quote.author}
-                </div>
-              )}
-            </div>
-            
-            <div className="absolute -top-2 -left-2 w-4 h-4 bg-primary/20 rounded-full"></div>
-            <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-accent/20 rounded-full"></div>
-          </div>
+        {/* Banner Ad */}
+        <div className="pt-4">
+          <BannerAd />
         </div>
 
         {/* Calendar */}
