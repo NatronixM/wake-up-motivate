@@ -9,6 +9,7 @@ export interface MotivationalTrack {
 }
 
 export const defaultTracks: MotivationalTrack[] = [
+  // Energetic & Motivational
   {
     id: '1',
     name: 'Rise & Shine',
@@ -20,75 +21,245 @@ export const defaultTracks: MotivationalTrack[] = [
   },
   {
     id: '2',
-    name: 'Good Morning Beautiful',
-    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/good_morning_beautiful.mp3',
-    duration: 25,
-    category: 'peaceful',
+    name: '6AM Rise and Shine',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/6AM%20RIse%20and%20Shine.mp3',
+    duration: 29,
+    category: 'energetic',
     isPremium: false,
-    description: 'Gentle and encouraging morning greeting'
+    description: 'Early morning motivational wake-up call'
   },
   {
     id: '3',
-    name: 'Good Night Stane',
-    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Good%20Night%20Stane.mp3',
-    duration: 20,
-    category: 'peaceful',
-    isPremium: false,
-    description: 'Calming bedtime reminder'
-  },
-  {
-    id: '4',
     name: 'Good Morning Badass',
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/good_morning_badass.mp3',
-    duration: 35,
+    duration: 16,
     category: 'energetic',
     isPremium: false,
     description: 'Powerful and confident morning wake-up call'
   },
   {
-    id: '5',
-    name: 'Get Up Gorgeous',
-    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/get%20up%20Georgouse.mp3',
-    duration: 30,
-    category: 'inspirational',
-    isPremium: false,
-    description: 'Uplifting and confidence-boosting alarm'
-  },
-  {
-    id: '6',
-    name: 'Stunning Stack of Sunshine',
-    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Stunning%20Stack%20of%20Sunshine.mp3',
-    duration: 40,
-    category: 'inspirational',
-    isPremium: false,
-    description: 'Bright and cheerful morning motivation'
-  },
-  {
-    id: '7',
-    name: 'Take Your Meds',
-    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/take_your_meds.mp3',
-    duration: 15,
-    category: 'peaceful',
-    isPremium: false,
-    description: 'Gentle reminder for medication'
-  },
-  {
-    id: '8',
+    id: '4',
     name: 'Wake Up Strong',
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/wake-the-f-ck-up.mp3',
-    duration: 20,
+    duration: 9,
     category: 'energetic',
     isPremium: false,
     description: 'Direct and powerful wake-up call'
   },
   {
+    id: '5',
+    name: 'Do It!!!',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Do%20it!!!.mp3',
+    duration: 20,
+    category: 'energetic',
+    isPremium: false,
+    description: 'High-energy motivational push'
+  },
+  {
+    id: '6',
+    name: 'Doo It',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Doo%20It.mp3',
+    duration: 30,
+    category: 'energetic',
+    isPremium: false,
+    description: 'Energetic motivation to take action'
+  },
+  {
+    id: '7',
+    name: 'Energy Work Hard',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Energy%20Work%20Hard.mp3',
+    duration: 30,
+    category: 'energetic',
+    isPremium: false,
+    description: 'High-energy work motivation'
+  },
+  {
+    id: '8',
+    name: '10 Seconds to Get Up',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/10Sec%20to%20Get%20Up.mp3',
+    duration: 30,
+    category: 'energetic',
+    isPremium: false,
+    description: 'Urgent countdown motivation'
+  },
+  {
     id: '9',
+    name: '3-2-1 Eagle Has Landed',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/3-2-1%20Eagle%20Has%20Landed.mp3',
+    duration: 27,
+    category: 'energetic',
+    isPremium: false,
+    description: 'Mission-style countdown motivation'
+  },
+  {
+    id: '10',
+    name: 'First Alarm Ring',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/First%20Alarm%20Ring.mp3',
+    duration: 17,
+    category: 'energetic',
+    isPremium: false,
+    description: 'Classic alarm motivation'
+  },
+  
+  // Peaceful & Gentle
+  {
+    id: '11',
+    name: 'Good Morning Beautiful',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/good_morning_beautiful.mp3',
+    duration: 20,
+    category: 'peaceful',
+    isPremium: false,
+    description: 'Gentle and encouraging morning greeting'
+  },
+  {
+    id: '12',
+    name: 'Good Night Stane',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Good%20Night%20Stane.mp3',
+    duration: 30,
+    category: 'peaceful',
+    isPremium: false,
+    description: 'Calming bedtime reminder'
+  },
+  {
+    id: '13',
+    name: 'Take Your Meds',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/take_your_meds.mp3',
+    duration: 30,
+    category: 'peaceful',
+    isPremium: false,
+    description: 'Gentle reminder for medication'
+  },
+  {
+    id: '14',
+    name: 'Choose to Become Better',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Choose%20to%20Become%20Better.mp3',
+    duration: 11,
+    category: 'peaceful',
+    isPremium: false,
+    description: 'Gentle self-improvement motivation'
+  },
+  
+  // Inspirational & Motivational
+  {
+    id: '15',
+    name: 'Get Up Gorgeous',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/get%20up%20Georgouse.mp3',
+    duration: 21,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Uplifting and confidence-boosting alarm'
+  },
+  {
+    id: '16',
+    name: 'Stunning Stack of Sunshine',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Stunning%20Stack%20of%20Sunshine.mp3',
+    duration: 30,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Bright and cheerful morning motivation'
+  },
+  {
+    id: '17',
     name: 'Warrior of Faith',
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Motivationsl%20Alarm%20clock%20Warrior%20of%20Faith.mp3',
-    duration: 45,
+    duration: 84,
     category: 'inspirational',
     isPremium: false,
     description: 'Powerful spiritual motivation for inner strength'
+  },
+  {
+    id: '18',
+    name: 'Believe in Yourself',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Beleive%20in%20YourSelf.mp3',
+    duration: 30,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Self-confidence and belief motivation'
+  },
+  {
+    id: '19',
+    name: 'Break the Pattern',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Break%20the%20Pattern.mp3',
+    duration: 30,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Motivation to change bad habits'
+  },
+  {
+    id: '20',
+    name: 'Day One',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Day%20One.mp3',
+    duration: 29,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Fresh start motivation'
+  },
+  {
+    id: '21',
+    name: 'Dare to Do',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Dare%20to%20Do.mp3',
+    duration: 15,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Courage and action motivation'
+  },
+  {
+    id: '22',
+    name: 'Dude You Have Another Day',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Dude%20You%20Have%20Another%20Day.mp3',
+    duration: 13,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Positive outlook on new opportunities'
+  },
+  {
+    id: '23',
+    name: 'Get Out of Bed',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Get%20out%20of%20Bed.mp3',
+    duration: 24,
+    category: 'inspirational',
+    isPremium: false,
+    description: 'Direct motivation to start the day'
+  },
+  
+  // Nature & Calming
+  {
+    id: '24',
+    name: 'Come On Man',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Comon%20Man.mp3',
+    duration: 22,
+    category: 'nature',
+    isPremium: false,
+    description: 'Friendly encouragement'
+  },
+  {
+    id: '25',
+    name: 'Don\'t Think About Going to Sleep',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Dont%20Think%20About%20going%20to%20sleep.mp3',
+    duration: 15,
+    category: 'nature',
+    isPremium: false,
+    description: 'Anti-snooze motivation'
+  },
+  
+  // Premium Tracks
+  {
+    id: '26',
+    name: 'Don\'t Matter You\'re a Marine',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Dont%20Matter%20Your%20a%20Marine.mp3',
+    duration: 29,
+    category: 'energetic',
+    isPremium: true,
+    description: 'Military-style motivational wake-up'
+  },
+  {
+    id: '27',
+    name: 'Football is Hard',
+    url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Football%20is%20Hard.mp3',
+    duration: 30,
+    category: 'energetic',
+    isPremium: true,
+    description: 'Sports motivation for toughness'
   }
 ];
 
