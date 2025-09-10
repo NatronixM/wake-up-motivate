@@ -82,13 +82,14 @@ export const defaultTracks: MotivationalTrack[] = [
     isPremium: false,
     description: 'Urgent countdown motivation'
   },
+  // Premium Tracks (Additional tracks from GitHub repo)
   {
     id: '9',
     name: '3-2-1 Eagle Has Landed',
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/3-2-1%20Eagle%20Has%20Landed.mp3',
     duration: 27,
     category: 'energetic',
-    isPremium: false,
+    isPremium: true,
     description: 'Mission-style countdown motivation'
   },
   {
@@ -97,18 +98,16 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/First%20Alarm%20Ring.mp3',
     duration: 17,
     category: 'energetic',
-    isPremium: false,
+    isPremium: true,
     description: 'Classic alarm motivation'
   },
-  
-  // Peaceful & Gentle
   {
     id: '11',
     name: 'Good Morning Beautiful',
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/good_morning_beautiful.mp3',
     duration: 20,
     category: 'peaceful',
-    isPremium: false,
+    isPremium: true,
     description: 'Gentle and encouraging morning greeting'
   },
   {
@@ -117,7 +116,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Good%20Night%20Stane.mp3',
     duration: 30,
     category: 'peaceful',
-    isPremium: false,
+    isPremium: true,
     description: 'Calming bedtime reminder'
   },
   {
@@ -126,7 +125,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/take_your_meds.mp3',
     duration: 30,
     category: 'peaceful',
-    isPremium: false,
+    isPremium: true,
     description: 'Gentle reminder for medication'
   },
   {
@@ -135,18 +134,16 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Choose%20to%20Become%20Better.mp3',
     duration: 11,
     category: 'peaceful',
-    isPremium: false,
+    isPremium: true,
     description: 'Gentle self-improvement motivation'
   },
-  
-  // Inspirational & Motivational
   {
     id: '15',
     name: 'Get Up Gorgeous',
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/get%20up%20Georgouse.mp3',
     duration: 21,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Uplifting and confidence-boosting alarm'
   },
   {
@@ -155,7 +152,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Stunning%20Stack%20of%20Sunshine.mp3',
     duration: 30,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Bright and cheerful morning motivation'
   },
   {
@@ -164,7 +161,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Motivationsl%20Alarm%20clock%20Warrior%20of%20Faith.mp3',
     duration: 84,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Powerful spiritual motivation for inner strength'
   },
   {
@@ -173,7 +170,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Beleive%20in%20YourSelf.mp3',
     duration: 30,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Self-confidence and belief motivation'
   },
   {
@@ -182,7 +179,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Break%20the%20Pattern.mp3',
     duration: 30,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Motivation to change bad habits'
   },
   {
@@ -191,7 +188,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Day%20One.mp3',
     duration: 29,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Fresh start motivation'
   },
   {
@@ -200,7 +197,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Dare%20to%20Do.mp3',
     duration: 15,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Courage and action motivation'
   },
   {
@@ -209,7 +206,7 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Dude%20You%20Have%20Another%20Day.mp3',
     duration: 13,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Positive outlook on new opportunities'
   },
   {
@@ -218,18 +215,16 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Get%20out%20of%20Bed.mp3',
     duration: 24,
     category: 'inspirational',
-    isPremium: false,
+    isPremium: true,
     description: 'Direct motivation to start the day'
   },
-  
-  // Nature & Calming
   {
     id: '24',
     name: 'Come On Man',
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Comon%20Man.mp3',
     duration: 22,
     category: 'nature',
-    isPremium: false,
+    isPremium: true,
     description: 'Friendly encouragement'
   },
   {
@@ -238,11 +233,9 @@ export const defaultTracks: MotivationalTrack[] = [
     url: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/Dont%20Think%20About%20going%20to%20sleep.mp3',
     duration: 15,
     category: 'nature',
-    isPremium: false,
+    isPremium: true,
     description: 'Anti-snooze motivation'
   },
-  
-  // Premium Tracks
   {
     id: '26',
     name: 'Don\'t Matter You\'re a Marine',
