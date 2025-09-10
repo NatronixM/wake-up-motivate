@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Volume2, VolumeX, Clock, Calculator, Brain, Vibrate, Camera, Smartphone } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { TrackSelector } from "./TrackSelector";
+import { useCustomTracks } from "@/hooks/useCustomTracks";
 
 interface BedtimeReminder {
   id: string;
@@ -41,6 +42,7 @@ interface BedtimeReminderDialogProps {
 }
 
 export const BedtimeReminderDialog = ({ open, onOpenChange, reminder, onSave }: BedtimeReminderDialogProps) => {
+  const { customTracks, addCustomTrack, deleteCustomTrack } = useCustomTracks();
   const [time, setTime] = useState(reminder?.time || '22:00');
   const [label, setLabel] = useState(reminder?.label || 'Bedtime reminder');
   const [isActive, setIsActive] = useState(reminder?.isActive ?? true);
@@ -141,6 +143,9 @@ export const BedtimeReminderDialog = ({ open, onOpenChange, reminder, onSave }: 
                 selectedTrackId={soundName}
                 onTrackSelect={(track) => setSoundName(track.name)}
                 showPremiumTracks={true}
+                customTracks={customTracks}
+                onCustomTrackAdded={addCustomTrack}
+                onCustomTrackDeleted={deleteCustomTrack}
               />
             </div>
 

@@ -16,6 +16,7 @@ import { Slider } from "@/components/ui/slider";
 import { TrackSelector } from "./TrackSelector";
 import { WallpaperSelector } from "./WallpaperSelector";
 import { useWallpapers } from "@/hooks/useWallpapers";
+import { useCustomTracks } from "@/hooks/useCustomTracks";
 import { MotivationalTrack, defaultTracks } from "@/data/motivationalTracks";
 
 interface Wallpaper {
@@ -78,6 +79,7 @@ export const TimePickerDialog = ({
   onSave,
 }: TimePickerDialogProps) => {
   const { customWallpapers, addCustomWallpaper } = useWallpapers();
+  const { customTracks, addCustomTrack, deleteCustomTrack } = useCustomTracks();
   const [time, setTime] = useState(initialTime);
   const [label, setLabel] = useState(initialLabel);
   const [repeatDays, setRepeatDays] = useState<string[]>(initialRepeatDays);
@@ -276,6 +278,9 @@ export const TimePickerDialog = ({
               selectedTrackId={selectedTrack?.id}
               onTrackSelect={setSelectedTrack}
               showPremiumTracks={true}
+              customTracks={customTracks}
+              onCustomTrackAdded={addCustomTrack}
+              onCustomTrackDeleted={deleteCustomTrack}
             />
           </div>
 
