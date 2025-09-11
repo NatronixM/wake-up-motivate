@@ -234,20 +234,26 @@ const Index = () => {
         {/* Pro Banner */}
         <ProBanner />
 
-        {/* Student Deal Banner */}
-        <Card className="bg-gradient-card border-border/50 p-4 shadow-card">
+        {/* Student Deal Banner Ad */}
+        <Card className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-500/30 p-4">
           <div className="flex items-center gap-3">
-            <div className="bg-green-500/20 p-2 rounded-lg">
-              <TrendingUp className="h-6 w-6 text-green-500" />
+            <div className="bg-green-500 p-2 rounded-full">
+              <TrendingUp className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-foreground">September Student Deal</h3>
-              <p className="text-sm text-muted-foreground">
-                Students get Pro for under $1/month!
+              <div className="flex items-center gap-2">
+                <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">STUDENT DEAL</span>
+                <span className="text-sm font-medium">Limited Time</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Get Pro for under $1/month with student ID verification
               </p>
             </div>
-            <Button size="sm" variant="outline" className="border-border/50">
-              Learn More
+            <Button 
+              size="sm" 
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              Claim Deal
             </Button>
           </div>
         </Card>
