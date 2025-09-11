@@ -318,24 +318,6 @@ export const defaultTracks: MotivationalTrack[] = [
     description: 'Mental clarity and focus activation'
   },
   {
-    id: '35',
-    name: 'Wake Up Get Out of Bed',
-    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Wake%20Up%20Get%20Out%20of%20Bed.mp3',
-    duration: 24,
-    category: 'energetic',
-    isPremium: true,
-    description: 'Direct command to get moving'
-  },
-  {
-    id: '36',
-    name: 'Wake Up Lazy F',
-    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Wake%20Up%20Lazy%20F.mp3',
-    duration: 26,
-    category: 'energetic',
-    isPremium: true,
-    description: 'Tough love wake-up call'
-  },
-  {
     id: '37',
     name: 'Wake Up No Snooze',
     url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Wake%20Up%20no%20Snooze.mp3',
