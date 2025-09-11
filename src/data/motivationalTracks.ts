@@ -253,6 +253,124 @@ export const defaultTracks: MotivationalTrack[] = [
     category: 'energetic',
     isPremium: true,
     description: 'Sports motivation for toughness'
+  },
+  // Premium-Only Tracks for $4.99/month subscribers
+  {
+    id: '28',
+    name: 'Elite Morning Warrior',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/elite_morning_warrior.mp3',
+    duration: 45,
+    category: 'energetic',
+    isPremium: true,
+    description: 'Exclusive high-energy military-style motivation for champions'
+  },
+  {
+    id: '29',
+    name: 'Unstoppable Force',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/unstoppable_force.mp3',
+    duration: 38,
+    category: 'energetic',
+    isPremium: true,
+    description: 'Premium power track for unstoppable mindset'
+  },
+  {
+    id: '30',
+    name: 'CEO Mindset Activation',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/ceo_mindset_activation.mp3',
+    duration: 52,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Executive-level motivation for business leaders'
+  },
+  {
+    id: '31',
+    name: 'Diamond Mind Protocol',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/diamond_mind_protocol.mp3',
+    duration: 41,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Premium mental clarity and focus activation'
+  },
+  {
+    id: '32',
+    name: 'Millionaire Morning Routine',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/millionaire_morning_routine.mp3',
+    duration: 47,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Success-oriented wealth mindset activation'
+  },
+  {
+    id: '33',
+    name: 'Alpha Peak Performance',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/alpha_peak_performance.mp3',
+    duration: 39,
+    category: 'energetic',
+    isPremium: true,
+    description: 'Premium peak performance state activation'
+  },
+  {
+    id: '34',
+    name: 'Zen Master Focus',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/zen_master_focus.mp3',
+    duration: 43,
+    category: 'peaceful',
+    isPremium: true,
+    description: 'Premium mindfulness and concentration enhancement'
+  },
+  {
+    id: '35',
+    name: 'Phoenix Rising Protocol',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/phoenix_rising_protocol.mp3',
+    duration: 48,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Transformation and rebirth motivation for life changes'
+  },
+  {
+    id: '36',
+    name: 'Quantum Leap Activation',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/quantum_leap_activation.mp3',
+    duration: 44,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Premium breakthrough mindset for major life upgrades'
+  },
+  {
+    id: '37',
+    name: 'Victory Visualization',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/victory_visualization.mp3',
+    duration: 50,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Premium success visualization and goal achievement'
+  },
+  {
+    id: '38',
+    name: 'Elite Athlete Mindset',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/elite_athlete_mindset.mp3',
+    duration: 42,
+    category: 'energetic',
+    isPremium: true,
+    description: 'Professional athlete-level mental conditioning'
+  },
+  {
+    id: '39',
+    name: 'Sacred Morning Ritual',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/sacred_morning_ritual.mp3',
+    duration: 46,
+    category: 'peaceful',
+    isPremium: true,
+    description: 'Premium spiritual awakening and inner power activation'
+  },
+  {
+    id: '40',
+    name: 'Limitless Potential Unlock',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/limitless_potential_unlock.mp3',
+    duration: 49,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Premium personal development and potential maximization'
   }
 ];
 

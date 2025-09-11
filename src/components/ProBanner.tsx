@@ -21,7 +21,7 @@ export const ProBanner = () => {
             <span className="text-sm font-medium">Free Trial</span>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Unlock premium features & exclusive alarm sounds
+            Unlock 32 premium tracks & exclusive alarm features for $4.99/month
           </p>
         </div>
         <Button 
