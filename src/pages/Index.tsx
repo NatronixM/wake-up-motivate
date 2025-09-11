@@ -216,7 +216,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <Header title="Motivational Alarm Clock" showProBadge />
+      <Header title="Wake Force Alarm Clock" showProBadge />
       
       <div className="px-4 space-y-6">
         {/* Next Alarm Info */}
