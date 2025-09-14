@@ -700,7 +700,7 @@ export const defaultTracks: MotivationalTrack[] = [
     id: '79',
     name: 'Motivational Alarm Clock Warrior of Faith',
     url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/Motivationsl%20Alarm%20clock%20Warrior%20of%20Faith.mp3',
-    duration: 30,
+    duration: 84,
     category: 'inspirational',
     isPremium: true,
     description: 'Faith-based warrior motivation'
