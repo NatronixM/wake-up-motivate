@@ -713,6 +713,51 @@ export const defaultTracks: MotivationalTrack[] = [
     category: 'inspirational',
     isPremium: true,
     description: 'Alternative confidence-boosting compliment'
+  },
+  {
+    id: '81',
+    name: 'Good Night Stane',
+    url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/Good%20Night%20Stane.mp3',
+    duration: 30,
+    category: 'peaceful',
+    isPremium: true,
+    description: 'Bedtime relaxation and rest'
+  },
+  {
+    id: '82',
+    name: 'Wake Up Get Out of Bed',
+    url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/Wake%20Up%20Get%20Out%20of%20Bed.mp3',
+    duration: 30,
+    category: 'energetic',
+    isPremium: true,
+    description: 'Direct command to exit bed'
+  },
+  {
+    id: '83',
+    name: 'Get Up Gorgeous',
+    url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/get%20up%20Georgouse.mp3',
+    duration: 30,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Beautiful and uplifting wake-up call'
+  },
+  {
+    id: '84',
+    name: 'Good Morning Beautiful',
+    url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/good_morning_beautiful.mp3',
+    duration: 30,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Sweet and positive morning greeting'
+  },
+  {
+    id: '85',
+    name: 'Take Your Meds',
+    url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/take_your_meds.mp3',
+    duration: 30,
+    category: 'inspirational',
+    isPremium: true,
+    description: 'Health reminder and self-care motivation'
   }
 ];
 
