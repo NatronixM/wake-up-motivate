@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -96,6 +96,9 @@ export const AlarmEditDialog = ({
   const [wakeUpCheckType, setWakeUpCheckType] = useState<'math' | 'memory' | 'shake' | 'photo' | 'barcode'>(initialWakeUpCheckType);
   const [wallpaper, setWallpaper] = useState(initialWallpaper);
   const [playingPreview, setPlayingPreview] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<'all' | 'energetic' | 'inspirational' | 'peaceful' | 'nature' | 'custom'>('all');
 
   const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -123,17 +126,63 @@ export const AlarmEditDialog = ({
   };
 
   const handlePreviewTrack = (trackName: string) => {
+    const track = defaultTracks.find(t => t.name === trackName);
+    if (!track) return;
+
+    // If same track is playing, stop it
     if (playingPreview === trackName) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
       setPlayingPreview(null);
-      toast.success("Preview stopped");
-    } else {
-      setPlayingPreview(trackName);
-      toast.success(`Playing preview: ${trackName}`);
-      // Stop preview after 3 seconds
-      setTimeout(() => setPlayingPreview(null), 3000);
+      return;
     }
+
+    // Stop any previous audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
+
+    const audio = new Audio(track.url);
+    audio.volume = 1.0;
+    audioRef.current = audio;
+    setPlayingPreview(track.name);
+
+    audio.play().catch(() => {
+      setPlayingPreview(null);
+      toast.error("Unable to play preview. Check your audio settings.");
+    });
+
+    audio.onended = () => {
+      setPlayingPreview(null);
+      if (audioRef.current) {
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+    };
   };
 
+  // Stop preview when dialog closes or component unmounts
+  useEffect(() => {
+    if (!isOpen && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+      setPlayingPreview(null);
+    }
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+    };
+  }, [isOpen]);
   const getWakeUpChallengeIcon = (type: string) => {
     switch (type) {
       case 'math': return Calculator;
@@ -324,77 +373,110 @@ export const AlarmEditDialog = ({
                 <Volume2 className="h-4 w-4" />
                 Alarm Sound ({defaultTracks.length} tracks available)
               </Label>
+
+              {/* Search and Category Filters */}
+              <div className="flex flex-col gap-2">
+                <Input
+                  placeholder="Search tracks..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="bg-secondary/50 border-border/50"
+                />
+                <div className="flex flex-wrap gap-2">
+                  {([
+                    { key: 'all', label: 'All' },
+                    { key: 'energetic', label: 'Energetic' },
+                    { key: 'inspirational', label: 'Inspirational' },
+                    { key: 'peaceful', label: 'Peaceful' },
+                    { key: 'nature', label: 'Nature' },
+                    { key: 'custom', label: 'Custom' },
+                  ] as const).map(({ key, label }) => (
+                    <Button
+                      key={key}
+                      size="sm"
+                      variant={categoryFilter === key ? 'default' : 'outline'}
+                      onClick={() => setCategoryFilter(key)}
+                      className={categoryFilter === key ? 'bg-primary text-primary-foreground' : 'border-border/50'}
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
               
               <ScrollArea className="max-h-80 border border-border rounded-lg p-3">
                 <div className="space-y-2">
-                  {defaultTracks.map((track) => {
-                    const formatDuration = (seconds: number) => {
-                      const mins = Math.floor(seconds / 60);
-                      const secs = seconds % 60;
-                      return `${mins}:${secs.toString().padStart(2, '0')}`;
-                    };
-                    
-                    return (
-                      <div
-                        key={track.id}
-                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm ${
-                          soundName === track.name 
-                            ? 'bg-primary/10 border-primary shadow-sm' 
-                            : 'border-border hover:bg-secondary/30'
-                        }`}
-                        onClick={() => setSoundName(track.name)}
-                      >
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handlePreviewTrack(track.name);
-                          }}
-                          className="h-8 w-8 p-0 shrink-0 hover:bg-primary/20"
+                  {defaultTracks
+                    .filter((t) => (categoryFilter === 'all' ? true : t.category === categoryFilter))
+                    .filter((t) => t.name.toLowerCase().includes(search.toLowerCase()))
+                    .map((track) => {
+                      const formatDuration = (seconds: number) => {
+                        const mins = Math.floor(seconds / 60);
+                        const secs = seconds % 60;
+                        return `${mins}:${secs.toString().padStart(2, '0')}`;
+                      };
+                      
+                      return (
+                        <div
+                          key={track.id}
+                          className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm ${
+                            soundName === track.name 
+                              ? 'bg-primary/10 border-primary shadow-sm' 
+                              : 'border-border hover:bg-secondary/30'
+                          }`}
+                          onClick={() => setSoundName(track.name)}
                         >
-                          {playingPreview === track.name ? (
-                            <Pause className="h-4 w-4" />
-                          ) : (
-                            <Play className="h-4 w-4" />
-                          )}
-                        </Button>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <h4 className="font-medium text-sm truncate">{track.name}</h4>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <span className="text-xs text-muted-foreground">
-                                {formatDuration(track.duration)}
-                              </span>
-                              {track.isPremium && (
-                                <span className="bg-gradient-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
-                                  PRO
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handlePreviewTrack(track.name);
+                            }}
+                            className="h-8 w-8 p-0 shrink-0 hover:bg-primary/20"
+                          >
+                            {playingPreview === track.name ? (
+                              <Pause className="h-4 w-4" />
+                            ) : (
+                              <Play className="h-4 w-4" />
+                            )}
+                          </Button>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <h4 className="font-medium text-sm truncate">{track.name}</h4>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-xs text-muted-foreground">
+                                  {formatDuration(track.duration)}
                                 </span>
+                                {track.isPremium && (
+                                  <span className="bg-gradient-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
+                                    PRO
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground capitalize">
+                                {track.category}
+                              </span>
+                              {track.description && (
+                                <>
+                                  <span className="text-xs text-muted-foreground">•</span>
+                                  <span className="text-xs text-muted-foreground truncate">
+                                    {track.description}
+                                  </span>
+                                </>
                               )}
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground capitalize">
-                              {track.category}
-                            </span>
-                            {track.description && (
-                              <>
-                                <span className="text-xs text-muted-foreground">•</span>
-                                <span className="text-xs text-muted-foreground truncate">
-                                  {track.description}
-                                </span>
-                              </>
-                            )}
-                          </div>
+                          
+                          {soundName === track.name && (
+                            <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                          )}
                         </div>
-                        
-                        {soundName === track.name && (
-                          <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
-                        )}
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               </ScrollArea>
               
