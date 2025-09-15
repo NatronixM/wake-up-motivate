@@ -6,7 +6,21 @@ export const useAudioPlayer = () => {
   const [currentTrack, setCurrentTrack] = useState<string | null>(null);
 
   const play = (url: string, volume: number = 0.8, loop: boolean = false) => {
-    // Stop current audio if playing
+    // If the same track is already loaded, just update settings and resume
+    if (audio && currentTrack === url) {
+      audio.loop = loop;
+      audio.volume = Math.max(0, Math.min(1, volume));
+      if (audio.paused) {
+        audio.play().catch((error) => {
+          console.error('Audio play failed:', error);
+          setIsPlaying(false);
+        });
+      }
+      setIsPlaying(true);
+      return;
+    }
+
+    // Stop current audio if playing a different track
     if (audio) {
       audio.pause();
       audio.currentTime = 0;

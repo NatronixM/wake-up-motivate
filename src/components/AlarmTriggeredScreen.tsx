@@ -18,24 +18,40 @@ export const AlarmTriggeredScreen = ({
   const { play, stop, isPlaying } = useAudioPlayer();
 
   useEffect(() => {
+    // Stop any scheduler-started sound first to avoid overlap
+    try {
+      AlarmScheduler.stopAlarmSound();
+    } catch (e) {}
+
     // Start playing the alarm sound on loop
     if (alarm.soundName) {
       play(alarm.soundName, (alarm.volume || 80) / 100, true); // Enable looping
     }
 
     // Keep screen awake if supported
+    let wakeLockRef: any;
     if ('wakeLock' in navigator) {
-      (navigator as any).wakeLock.request('screen').catch((err: any) => {
-        console.log('Wake lock failed:', err);
-      });
+      (navigator as any).wakeLock
+        .request('screen')
+        .then((wl: any) => {
+          wakeLockRef = wl;
+        })
+        .catch((err: any) => {
+          console.log('Wake lock failed:', err);
+        });
     }
 
     return () => {
       // Cleanup when component unmounts
       stop();
       AlarmScheduler.stopAlarmSound();
+      if (wakeLockRef && wakeLockRef.release) {
+        wakeLockRef.release().catch(() => {});
+      }
     };
-  }, [alarm.soundName, alarm.volume, play, stop]);
+    // Intentionally run only once on mount to prevent duplicate playback
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleDismiss = () => {
     stop();
