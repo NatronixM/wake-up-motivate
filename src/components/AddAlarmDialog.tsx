@@ -276,20 +276,27 @@ export const AddAlarmDialog = ({
       </Dialog>
 
       <TimePickerDialog
-        open={timePickerOpen}
-        onOpenChange={editingAlarm ? handleCancelEdit : setTimePickerOpen}
+        isOpen={timePickerOpen}
+        onClose={editingAlarm ? handleCancelEdit : () => setTimePickerOpen(false)}
         initialTime={time}
-        initialLabel={label}
-        initialRepeatDays={repeatDays}
-        initialSoundName={soundName}
-        initialSoundPowerUp={editingAlarm?.soundPowerUp}
-        initialSnoozeEnabled={editingAlarm?.snoozeEnabled}
-        initialSnoozeDuration={editingAlarm?.snoozeDuration}
-        initialMaxSnoozes={editingAlarm?.maxSnoozes}
-        initialWakeUpCheckEnabled={editingAlarm?.wakeUpCheckEnabled}
-        initialWakeUpCheckType={editingAlarm?.wakeUpCheckType}
-        initialWallpaper={editingAlarm?.wallpaper}
-        onSave={handleAdvancedSave}
+        onTimeSelect={(newTime) => {
+          setTime(newTime);
+          handleAdvancedSave({
+            time: newTime,
+            label,
+            isActive,
+            repeatDays,
+            soundName,
+            soundPowerUp: editingAlarm?.soundPowerUp,
+            snoozeEnabled: editingAlarm?.snoozeEnabled,
+            snoozeDuration: editingAlarm?.snoozeDuration,
+            maxSnoozes: editingAlarm?.maxSnoozes,
+            wakeUpCheckEnabled: editingAlarm?.wakeUpCheckEnabled,
+            wakeUpCheckType: editingAlarm?.wakeUpCheckType,
+            wallpaper: editingAlarm?.wallpaper
+          });
+        }}
+        title={editingAlarm ? "Edit Alarm Time" : "Set Alarm Time"}
       />
     </>
   );
