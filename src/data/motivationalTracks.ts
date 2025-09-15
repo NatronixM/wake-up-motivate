@@ -653,7 +653,7 @@ export const defaultTracks: MotivationalTrack[] = [
   },
   {
     id: '74',
-    name: 'Hello MF David Goggins',
+    name: 'Hello MF',
     url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/Hello%20MFer%20David%20Goggins.mp3',
     duration: 30,
     category: 'energetic',
@@ -662,7 +662,7 @@ export const defaultTracks: MotivationalTrack[] = [
   },
   {
     id: '75',
-    name: 'Hello Mother F David Goggins',
+    name: 'Hello Mother F',
     url: 'https://raw.githubusercontent.com/NatronixM/NewPremiumMotivationaltrackslist/main/Hello%20MotherFer%20David%20Goggins.mp3',
     duration: 30,
     category: 'energetic',
