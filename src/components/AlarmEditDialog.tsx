@@ -325,80 +325,73 @@ export const AlarmEditDialog = ({
                 Alarm Sound ({defaultTracks.length} tracks available)
               </Label>
               
-              <ScrollArea className="max-h-64 border border-border rounded-lg">
-                <div className="p-2">
-                  {['energetic', 'inspirational', 'peaceful', 'nature', 'custom'].map((category) => {
-                    const categoryTracks = defaultTracks.filter(track => track.category === category);
-                    if (categoryTracks.length === 0) return null;
+              <ScrollArea className="max-h-80 border border-border rounded-lg p-3">
+                <div className="space-y-2">
+                  {defaultTracks.map((track) => {
+                    const formatDuration = (seconds: number) => {
+                      const mins = Math.floor(seconds / 60);
+                      const secs = seconds % 60;
+                      return `${mins}:${secs.toString().padStart(2, '0')}`;
+                    };
                     
                     return (
-                      <div key={category} className="mb-4">
-                        <div className="flex items-center gap-2 mb-2 px-2">
-                          <div className="h-px bg-border flex-1" />
-                          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                            {category} ({categoryTracks.length})
-                          </span>
-                          <div className="h-px bg-border flex-1" />
+                      <div
+                        key={track.id}
+                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm ${
+                          soundName === track.name 
+                            ? 'bg-primary/10 border-primary shadow-sm' 
+                            : 'border-border hover:bg-secondary/30'
+                        }`}
+                        onClick={() => setSoundName(track.name)}
+                      >
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePreviewTrack(track.name);
+                          }}
+                          className="h-8 w-8 p-0 shrink-0 hover:bg-primary/20"
+                        >
+                          {playingPreview === track.name ? (
+                            <Pause className="h-4 w-4" />
+                          ) : (
+                            <Play className="h-4 w-4" />
+                          )}
+                        </Button>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <h4 className="font-medium text-sm truncate">{track.name}</h4>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-xs text-muted-foreground">
+                                {formatDuration(track.duration)}
+                              </span>
+                              {track.isPremium && (
+                                <span className="bg-gradient-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full">
+                                  PRO
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground capitalize">
+                              {track.category}
+                            </span>
+                            {track.description && (
+                              <>
+                                <span className="text-xs text-muted-foreground">•</span>
+                                <span className="text-xs text-muted-foreground truncate">
+                                  {track.description}
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
                         
-                        <div className="grid gap-1">
-                          {categoryTracks.map((track) => {
-                            const formatDuration = (seconds: number) => {
-                              const mins = Math.floor(seconds / 60);
-                              const secs = seconds % 60;
-                              return `${mins}:${secs.toString().padStart(2, '0')}`;
-                            };
-                            
-                            return (
-                              <Card key={track.id} className={`p-2 cursor-pointer transition-all hover:shadow-sm ${
-                                soundName === track.name 
-                                  ? 'bg-primary/10 border-primary shadow-sm' 
-                                  : 'hover:bg-secondary/50'
-                              }`}>
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handlePreviewTrack(track.name);
-                                    }}
-                                    className="h-8 w-8 p-0 shrink-0"
-                                  >
-                                    {playingPreview === track.name ? (
-                                      <Pause className="h-3 w-3" />
-                                    ) : (
-                                      <Play className="h-3 w-3" />
-                                    )}
-                                  </Button>
-                                  
-                                  <div 
-                                    className="flex-1 min-w-0"
-                                    onClick={() => setSoundName(track.name)}
-                                  >
-                                    <div className="flex items-center justify-between gap-2">
-                                      <div className="font-medium text-sm truncate">{track.name}</div>
-                                      <div className="text-xs text-muted-foreground shrink-0">
-                                        {formatDuration(track.duration)}
-                                      </div>
-                                    </div>
-                                    {track.description && (
-                                      <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                                        {track.description}
-                                      </div>
-                                    )}
-                                  </div>
-                                  
-                                  {track.isPremium && (
-                                    <div className="bg-gradient-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full shrink-0">
-                                      PRO
-                                    </div>
-                                  )}
-                                </div>
-                              </Card>
-                            );
-                          })}
-                        </div>
+                        {soundName === track.name && (
+                          <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                        )}
                       </div>
                     );
                   })}
@@ -406,14 +399,14 @@ export const AlarmEditDialog = ({
               </ScrollArea>
               
               {soundName && (
-                <div className="flex items-center gap-2 p-2 bg-primary/5 rounded-lg border border-primary/20">
+                <div className="flex items-center gap-2 p-3 bg-primary/5 rounded-lg border border-primary/20">
                   <Volume2 className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">Selected: {soundName}</span>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => handlePreviewTrack(soundName)}
-                    className="ml-auto h-6 px-2"
+                    className="ml-auto h-7 px-3"
                   >
                     {playingPreview === soundName ? (
                       <>
