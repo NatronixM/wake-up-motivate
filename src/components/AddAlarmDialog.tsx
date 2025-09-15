@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Plus, Upload, Volume2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { TimePickerDialog } from "./TimePickerDialog";
+import { AlarmEditDialog } from "./AlarmEditDialog";
 import { defaultTracks } from "@/data/motivationalTracks";
 import { toast } from "sonner";
 
@@ -275,28 +275,25 @@ export const AddAlarmDialog = ({
         </DialogContent>
       </Dialog>
 
-      <TimePickerDialog
+      <AlarmEditDialog
         isOpen={timePickerOpen}
         onClose={editingAlarm ? handleCancelEdit : () => setTimePickerOpen(false)}
         initialTime={time}
-        onTimeSelect={(newTime) => {
-          setTime(newTime);
-          handleAdvancedSave({
-            time: newTime,
-            label,
-            isActive,
-            repeatDays,
-            soundName,
-            soundPowerUp: editingAlarm?.soundPowerUp,
-            snoozeEnabled: editingAlarm?.snoozeEnabled,
-            snoozeDuration: editingAlarm?.snoozeDuration,
-            maxSnoozes: editingAlarm?.maxSnoozes,
-            wakeUpCheckEnabled: editingAlarm?.wakeUpCheckEnabled,
-            wakeUpCheckType: editingAlarm?.wakeUpCheckType,
-            wallpaper: editingAlarm?.wallpaper
-          });
-        }}
-        title={editingAlarm ? "Edit Alarm Time" : "Set Alarm Time"}
+        initialLabel={label}
+        initialRepeatDays={repeatDays}
+        initialSoundName={soundName}
+        initialMissionEnabled={editingAlarm?.missionEnabled}
+        initialMissionCount={editingAlarm?.missionCount}
+        initialSnoozeEnabled={editingAlarm?.snoozeEnabled}
+        initialSnoozeDuration={editingAlarm?.snoozeDuration}
+        initialMaxSnoozes={editingAlarm?.maxSnoozes}
+        initialSoundPowerUp={editingAlarm?.soundPowerUp}
+        initialVolume={editingAlarm?.volume}
+        initialWakeUpCheckEnabled={editingAlarm?.wakeUpCheckEnabled}
+        initialWakeUpCheckType={editingAlarm?.wakeUpCheckType}
+        initialWallpaper={editingAlarm?.wallpaper}
+        onSave={handleAdvancedSave}
+        title={editingAlarm ? "Edit Alarm" : "Create Alarm"}
       />
     </>
   );
