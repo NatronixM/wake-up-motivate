@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { AlarmCard } from "@/components/AlarmCard";
 import { AddAlarmDialog } from "@/components/AddAlarmDialog";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { AlarmDismissalScreen } from "@/components/AlarmDismissalScreen";
+import { AlarmTriggeredScreen } from "@/components/AlarmTriggeredScreen";
 import { Settings } from "./Settings";
 import { EventCalendar } from "./EventCalendar";
 import { SleepTracker } from "@/components/SleepTracker";
@@ -14,7 +15,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, TrendingUp, Play } from "lucide-react";
 import { toast } from "sonner";
-import { AlarmScheduler } from "@/utils/alarmScheduler";
+import { AlarmScheduler, Alarm } from "@/utils/alarmScheduler";
 
 interface Wallpaper {
   id: string;
@@ -24,29 +25,11 @@ interface Wallpaper {
   preview?: string;
 }
 
-interface Alarm {
-  id: string;
-  time: string;
-  label: string;
-  isActive: boolean;
-  repeatDays: string[];
-  soundName: string;
-  missionEnabled?: boolean;
-  missionCount?: number;
-  snoozeEnabled?: boolean;
-  snoozeDuration?: number;
-  maxSnoozes?: number; // -1 for unlimited
-  soundPowerUp?: number; // volume increase percentage
-  volume?: number;
-  wakeUpCheckEnabled?: boolean;
-  wakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
-  wallpaper?: Wallpaper;
-}
-
 const Index = () => {
   const [activeTab, setActiveTab] = useState('alarm');
   const [editingAlarm, setEditingAlarm] = useState<Alarm | null>(null);
   const [activeAlarm, setActiveAlarm] = useState<Alarm | null>(null);
+  const [triggeredAlarm, setTriggeredAlarm] = useState<Alarm | null>(null);
   const [snoozeCounts, setSnoozeCounts] = useState<Record<string, number>>({});
   const [alarms, setAlarms] = useState<Alarm[]>([
     {
@@ -55,20 +38,26 @@ const Index = () => {
       label: 'Morning workout',
       isActive: true,
       repeatDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      soundName: 'Rise & Shine',
+      soundName: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/rise_and_shine.mp3',
       missionEnabled: true,
       missionCount: 3,
-      volume: 80
+      volume: 80,
+      snoozeEnabled: true,
+      snoozeDuration: 5,
+      maxSnoozes: 3,
+      wakeUpCheckEnabled: true,
+      wakeUpCheckType: 'math'
     },
     {
       id: '2',
       time: '23:06',
       label: 'Bedtime reminder',
       isActive: true,
-      repeatDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      soundName: 'Peaceful Dreams',
+      repeatDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      soundName: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Peaceful%20Going%20to%20Have%20a%20Good%20Day.mp3',
       missionEnabled: false,
-      volume: 70
+      volume: 70,
+      snoozeEnabled: false
     },
     {
       id: '3',
@@ -76,12 +65,59 @@ const Index = () => {
       label: 'Early meditation',
       isActive: false,
       repeatDays: ['Mon', 'Wed', 'Fri'],
-      soundName: 'Zen Chimes',
+      soundName: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Peaceful%20Hi.mp3',
       missionEnabled: true,
       missionCount: 1,
-      volume: 60
+      volume: 60,
+      snoozeEnabled: true,
+      snoozeDuration: 10,
+      maxSnoozes: 2
     }
   ]);
+
+  // Initialize alarm scheduler and check for triggered alarms
+  useEffect(() => {
+    AlarmScheduler.initialize();
+
+    // Load stored alarms if any
+    const storedAlarms = AlarmScheduler.getStoredAlarms();
+    if (storedAlarms.length > 0) {
+      setAlarms(storedAlarms);
+    }
+
+    // Check for triggered alarms every minute
+    const checkAlarms = () => {
+      const now = new Date();
+      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      
+      const activeAlarms = alarms.filter(alarm => alarm.isActive);
+      const alarmToTrigger = activeAlarms.find(alarm => 
+        alarm.time === currentTime && !triggeredAlarm
+      );
+      
+      if (alarmToTrigger) {
+        setTriggeredAlarm(alarmToTrigger);
+      }
+    };
+
+    // Check immediately and then every 30 seconds
+    checkAlarms();
+    const interval = setInterval(checkAlarms, 30000);
+
+    // Listen for alarm messages from service worker
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'ALARM_TRIGGERED' && event.data.alarm) {
+        setTriggeredAlarm(event.data.alarm);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [alarms, triggeredAlarm]);
 
   const handleToggleAlarm = async (id: string, active: boolean) => {
     const updatedAlarms = alarms.map(alarm => 
@@ -178,20 +214,50 @@ const Index = () => {
 
   const handleDismissAlarm = () => {
     setActiveAlarm(null);
+    setTriggeredAlarm(null);
+    AlarmScheduler.stopAlarmSound();
     toast.success("Alarm dismissed! Have a great day! 🌅");
   };
 
   const handleSnoozeAlarm = () => {
-    if (activeAlarm) {
-      const currentCount = snoozeCounts[activeAlarm.id] || 0;
+    const currentAlarm = activeAlarm || triggeredAlarm;
+    if (currentAlarm) {
+      const currentCount = snoozeCounts[currentAlarm.id] || 0;
       setSnoozeCounts(prev => ({
         ...prev,
-        [activeAlarm.id]: currentCount + 1
+        [currentAlarm.id]: currentCount + 1
       }));
+      
+      // Schedule snooze alarm
+      const snoozeTime = new Date();
+      snoozeTime.setMinutes(snoozeTime.getMinutes() + (currentAlarm.snoozeDuration || 5));
+      
+      const snoozeTimeString = `${snoozeTime.getHours().toString().padStart(2, '0')}:${snoozeTime.getMinutes().toString().padStart(2, '0')}`;
+      
+      const snoozedAlarm = {
+        ...currentAlarm,
+        time: snoozeTimeString,
+        currentSnoozeCount: currentCount + 1
+      };
+
+      AlarmScheduler.scheduleAlarm(snoozedAlarm);
+      AlarmScheduler.stopAlarmSound();
       setActiveAlarm(null);
-      toast.info(`Alarm snoozed for ${activeAlarm.snoozeDuration || 5} minutes`);
+      setTriggeredAlarm(null);
+      toast.info(`Alarm snoozed for ${currentAlarm.snoozeDuration || 5} minutes`);
     }
   };
+
+  // Show real triggered alarm screen
+  if (triggeredAlarm) {
+    return (
+      <AlarmTriggeredScreen
+        alarm={triggeredAlarm}
+        onDismiss={handleDismissAlarm}
+        onSnooze={triggeredAlarm.snoozeEnabled ? handleSnoozeAlarm : undefined}
+      />
+    );
+  }
 
   if (activeTab === 'settings') {
     return (
@@ -355,7 +421,7 @@ const Index = () => {
           currentSnoozeCount={snoozeCounts[activeAlarm.id] || 0}
           wakeUpCheckEnabled={activeAlarm.wakeUpCheckEnabled || false}
           wakeUpCheckType={activeAlarm.wakeUpCheckType || 'math'}
-          soundPowerUp={activeAlarm.soundPowerUp || 0}
+          soundPowerUp={activeAlarm.volume || 80}
           onDismiss={handleDismissAlarm}
           onSnooze={handleSnoozeAlarm}
         />

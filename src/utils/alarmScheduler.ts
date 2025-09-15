@@ -11,6 +11,14 @@ export interface Alarm {
   repeatDays?: string[];
   soundName?: string;
   volume?: number;
+  missionEnabled?: boolean;
+  missionCount?: number;
+  snoozeEnabled?: boolean;
+  snoozeDuration?: number;
+  maxSnoozes?: number;
+  currentSnoozeCount?: number;
+  wakeUpCheckEnabled?: boolean;
+  wakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
 }
 
 export class AlarmScheduler {
@@ -212,15 +220,26 @@ export class AlarmScheduler {
   // Play alarm sound with maximum volume
   private static playAlarmSound(alarm: Alarm): void {
     try {
-      const audio = new Audio('/sounds/placeholder.txt'); // You'll need actual audio files
+      // Get the track URL from alarm or use default
+      const trackUrl = alarm.soundName || 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/rise_and_shine.mp3';
+      
+      const audio = new Audio(trackUrl);
       audio.volume = (alarm.volume || 80) / 100;
-      audio.loop = true;
+      audio.loop = true; // Loop until dismissed
+      audio.preload = 'auto';
+      
+      // Ensure audio can play in background
+      audio.setAttribute('autoplay', 'true');
       
       const playPromise = audio.play();
       
       if (playPromise !== undefined) {
         playPromise.catch(error => {
           console.error('Error playing alarm sound:', error);
+          // Fallback to browser notification sound if audio fails
+          if ('Notification' in window) {
+            console.log('Audio failed, using notification sound as backup');
+          }
         });
       }
 
