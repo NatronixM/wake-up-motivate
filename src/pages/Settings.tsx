@@ -16,13 +16,16 @@ import {
   Info,
   X,
   ArrowRight,
-  ArrowLeft
+  ArrowLeft,
+  Settings as SettingsIcon,
+  AlertTriangle
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { PermissionsManager } from "@/utils/permissions";
 
 export const Settings = () => {
   const [generalOpen, setGeneralOpen] = useState(false);
+  const [troubleshootOpen, setTroubleshootOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
@@ -166,6 +169,12 @@ export const Settings = () => {
       title: "General",
       hasArrow: true,
       action: () => setGeneralOpen(true)
+    },
+    {
+      icon: SettingsIcon,
+      title: "Trouble Shoot",
+      hasArrow: true,
+      action: () => setTroubleshootOpen(true)
     },
     {
       icon: HelpCircle,
@@ -387,6 +396,107 @@ export const Settings = () => {
                   )}
                 </Button>
               </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Troubleshoot Dialog */}
+      <Dialog open={troubleshootOpen} onOpenChange={setTroubleshootOpen}>
+        <DialogContent className="bg-card border-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-foreground flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              Android Setup Guide
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Follow these steps to ensure Wake Force alarms work reliably on your Android device.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <div className="bg-muted/20 p-3 rounded-lg">
+                <h4 className="font-medium text-foreground mb-2">1. Battery Optimization</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Disable battery optimization for Wake Force to prevent the system from stopping alarms.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    // Open Android battery optimization settings
+                    if (window.location.href.includes('android')) {
+                      window.open('android-app://com.android.settings/.applications.ManageApplications', '_system');
+                    }
+                  }}
+                >
+                  Open Battery Settings
+                </Button>
+              </div>
+              
+              <div className="bg-muted/20 p-3 rounded-lg">
+                <h4 className="font-medium text-foreground mb-2">2. Display Over Other Apps</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Allow Wake Force to display over other apps so alarms can take over your screen.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    if (window.location.href.includes('android')) {
+                      window.open('android-app://com.android.settings/.applications.DrawOverlaySettings', '_system');
+                    }
+                  }}
+                >
+                  Open Display Settings
+                </Button>
+              </div>
+              
+              <div className="bg-muted/20 p-3 rounded-lg">
+                <h4 className="font-medium text-foreground mb-2">3. Notification Access</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Ensure Wake Force has full notification permissions for reliable alarm alerts.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    if (window.location.href.includes('android')) {
+                      window.open('android-app://com.android.settings/.applications.NotificationSettings', '_system');
+                    }
+                  }}
+                >
+                  Open Notification Settings
+                </Button>
+              </div>
+              
+              <div className="bg-muted/20 p-3 rounded-lg">
+                <h4 className="font-medium text-foreground mb-2">4. Do Not Disturb Override</h4>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Allow Wake Force alarms to bypass Do Not Disturb mode.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    if (window.location.href.includes('android')) {
+                      window.open('android-app://com.android.settings/.ZenModeSettings', '_system');
+                    }
+                  }}
+                >
+                  Open DND Settings
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-green-500/10 border border-green-500/20 p-3 rounded-lg">
+              <p className="text-sm text-green-700 dark:text-green-300 font-medium">
+                💡 Tip: After changing these settings, restart Wake Force to ensure all permissions are properly applied.
+              </p>
             </div>
           </div>
         </DialogContent>
