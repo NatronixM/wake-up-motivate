@@ -14,6 +14,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, TrendingUp, Play } from "lucide-react";
 import { toast } from "sonner";
+import { AlarmScheduler } from "@/utils/alarmScheduler";
 
 interface Wallpaper {
   id: string;
@@ -82,13 +83,23 @@ const Index = () => {
     }
   ]);
 
-  const handleToggleAlarm = (id: string, active: boolean) => {
-    setAlarms(prev => 
-      prev.map(alarm => 
-        alarm.id === id ? { ...alarm, isActive: active } : alarm
-      )
+  const handleToggleAlarm = async (id: string, active: boolean) => {
+    const updatedAlarms = alarms.map(alarm => 
+      alarm.id === id ? { ...alarm, isActive: active } : alarm
     );
-    toast.success(active ? "Alarm activated" : "Alarm deactivated");
+    setAlarms(updatedAlarms);
+    
+    // Schedule or cancel alarm based on active state
+    const alarm = updatedAlarms.find(a => a.id === id);
+    if (alarm) {
+      if (active) {
+        await AlarmScheduler.scheduleAlarm(alarm);
+        toast.success("Alarm scheduled and will work even when screen is locked!");
+      } else {
+        await AlarmScheduler.cancelAlarm(id);
+        toast.success("Alarm deactivated");
+      }
+    }
   };
 
   const handleEditAlarm = (id: string) => {
@@ -98,7 +109,9 @@ const Index = () => {
     }
   };
 
-  const handleDeleteAlarm = (id: string) => {
+  const handleDeleteAlarm = async (id: string) => {
+    // Cancel alarm before deleting
+    await AlarmScheduler.cancelAlarm(id);
     setAlarms(prev => prev.filter(alarm => alarm.id !== id));
     toast.success("Alarm deleted");
   };
@@ -122,25 +135,39 @@ const Index = () => {
     }
   };
 
-  const handleAddAlarm = (newAlarm: Omit<Alarm, 'id'>) => {
+  const handleAddAlarm = async (newAlarm: Omit<Alarm, 'id'>) => {
     const alarm: Alarm = {
       ...newAlarm,
       id: Date.now().toString()
     };
     setAlarms(prev => [...prev, alarm]);
-    toast.success("Alarm created successfully!");
+    
+    // Schedule the alarm for background functionality
+    if (alarm.isActive) {
+      await AlarmScheduler.scheduleAlarm(alarm);
+      toast.success("Alarm created and scheduled! It will work even when screen is locked.");
+    } else {
+      toast.success("Alarm created successfully!");
+    }
   };
 
-  const handleUpdateAlarm = (updatedAlarm: Omit<Alarm, 'id'>) => {
+  const handleUpdateAlarm = async (updatedAlarm: Omit<Alarm, 'id'>) => {
     if (editingAlarm) {
-      const updatedAlarms = alarms.map(alarm => 
-        alarm.id === editingAlarm.id 
-          ? { ...updatedAlarm, id: editingAlarm.id }
-          : alarm
+      const alarm: Alarm = { ...updatedAlarm, id: editingAlarm.id };
+      const updatedAlarms = alarms.map(existingAlarm => 
+        existingAlarm.id === editingAlarm.id ? alarm : existingAlarm
       );
       setAlarms(updatedAlarms);
       setEditingAlarm(null);
-      toast.success("Alarm updated successfully!");
+      
+      // Reschedule the alarm
+      if (alarm.isActive) {
+        await AlarmScheduler.scheduleAlarm(alarm);
+        toast.success("Alarm updated and rescheduled!");
+      } else {
+        await AlarmScheduler.cancelAlarm(alarm.id);
+        toast.success("Alarm updated!");
+      }
     }
   };
 

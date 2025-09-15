@@ -158,18 +158,26 @@ export const TimePickerDialog = ({
         <div className="space-y-6">
           {/* Time Display */}
           <div className="text-center space-y-4">
-            <div className="flex justify-center items-center gap-4 text-6xl font-light text-foreground">
+            <div 
+              className="flex justify-center items-center gap-4 text-6xl font-light text-foreground cursor-pointer hover:bg-muted/20 rounded-lg p-4 transition-colors"
+              onClick={() => document.getElementById('time-input')?.focus()}
+            >
               <span>{displayHour}</span>
               <span>:</span>
               <span>{minutes}</span>
               <span className="text-3xl text-muted-foreground">{period}</span>
             </div>
             <Input
+              id="time-input"
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="sr-only"
+              className="text-center text-lg bg-secondary/50 border-border/50"
+              placeholder="Select time"
             />
+            <p className="text-sm text-muted-foreground">
+              Tap the time above or use the input to change alarm time
+            </p>
           </div>
 
           {/* Daily Repeat */}

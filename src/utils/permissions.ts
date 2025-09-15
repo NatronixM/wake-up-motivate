@@ -1,5 +1,6 @@
 // Capacitor permissions and native device capabilities
 import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 export class PermissionsManager {
   // Request permission to display over other apps (Android)
@@ -40,8 +41,8 @@ export class PermissionsManager {
     try {
       if (Capacitor.isNativePlatform()) {
         // Use Capacitor Local Notifications plugin
-        console.log('Requesting notification permission...');
-        return true; // Mock for demo
+        const permission = await LocalNotifications.requestPermissions();
+        return permission.display === 'granted';
       } else if ('Notification' in window) {
         const permission = await Notification.requestPermission();
         return permission === 'granted';
@@ -49,6 +50,74 @@ export class PermissionsManager {
       return false;
     } catch (error) {
       console.error('Failed to request notification permission:', error);
+      return false;
+    }
+  }
+
+  // Schedule alarm notification
+  static async scheduleAlarmNotification(alarm: {
+    id: string;
+    time: string;
+    label: string;
+    soundName?: string;
+  }): Promise<boolean> {
+    try {
+      if (!Capacitor.isNativePlatform()) {
+        console.log('Alarm scheduling not available on web platform');
+        return false;
+      }
+
+      const [hours, minutes] = alarm.time.split(':').map(Number);
+      const now = new Date();
+      const alarmDate = new Date();
+      alarmDate.setHours(hours, minutes, 0, 0);
+
+      // If alarm time is in the past, schedule for next day
+      if (alarmDate <= now) {
+        alarmDate.setDate(alarmDate.getDate() + 1);
+      }
+
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: 'Wake Force Alarm',
+            body: alarm.label || 'Time to wake up!',
+            id: parseInt(alarm.id) || 1,
+            schedule: { at: alarmDate },
+            sound: 'alarm.wav',
+            actionTypeId: 'ALARM_ACTION',
+            attachments: [],
+            extra: {
+              alarmId: alarm.id,
+              soundName: alarm.soundName,
+            }
+          }
+        ]
+      });
+
+      console.log(`Alarm scheduled for ${alarmDate.toLocaleString()}`);
+      return true;
+    } catch (error) {
+      console.error('Failed to schedule alarm notification:', error);
+      return false;
+    }
+  }
+
+  // Cancel alarm notification
+  static async cancelAlarmNotification(alarmId: string): Promise<boolean> {
+    try {
+      if (!Capacitor.isNativePlatform()) {
+        return false;
+      }
+
+      await LocalNotifications.cancel({
+        notifications: [{ id: parseInt(alarmId) || 1 }]
+      });
+
+      console.log(`Alarm ${alarmId} cancelled`);
+      return true;
+    } catch (error) {
+      console.error('Failed to cancel alarm notification:', error);
       return false;
     }
   }
