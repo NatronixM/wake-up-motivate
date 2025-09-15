@@ -19,11 +19,16 @@ import {
 } from "lucide-react";
 import { PermissionsManager, AndroidPermissions } from "@/utils/permissions";
 import { Capacitor } from "@capacitor/core";
+import { LocalNotifications } from "@capacitor/local-notifications";
+import { useAudioPlayer } from "@/hooks/useAudioPlayer";
+import { toast } from "sonner";
 
 export const TroubleshootTab = () => {
   const [permissions, setPermissions] = useState<AndroidPermissions | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [isTestingAlarm, setIsTestingAlarm] = useState(false);
+  const { play, stop } = useAudioPlayer();
 
   const loadPermissions = async () => {
     try {
@@ -45,6 +50,147 @@ export const TroubleshootTab = () => {
     setRefreshing(true);
     await loadPermissions();
   };
+
+  const scheduleTestAlarm = async () => {
+    if (isTestingAlarm) return;
+    
+    setIsTestingAlarm(true);
+    
+    try {
+      // Request notification permission first
+      const notificationPermission = await LocalNotifications.requestPermissions();
+      
+      if (notificationPermission.display !== 'granted') {
+        toast.error("Notification permission required for test alarm");
+        setIsTestingAlarm(false);
+        return;
+      }
+
+      // Schedule a test alarm for 10 seconds from now
+      const testTime = new Date(Date.now() + 10000); // 10 seconds
+      
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: "Test Alarm - Wake Force",
+            body: "Testing alarm functionality with screen wake",
+            id: 9999,
+            schedule: { at: testTime },
+            sound: undefined, // We'll handle sound manually
+            attachments: undefined,
+            actionTypeId: "",
+            extra: {
+              isTestAlarm: true
+            }
+          }
+        ]
+      });
+
+      // Also set a JavaScript timeout as backup
+      setTimeout(async () => {
+        try {
+          // Try to wake the screen and play audio
+          if (Capacitor.isNativePlatform()) {
+            // Request wake lock to keep screen on
+            try {
+              // @ts-ignore - Wake Lock API might not be fully typed
+              await navigator.wakeLock?.request('screen');
+            } catch (e) {
+              console.log('Wake lock not available:', e);
+            }
+          }
+          
+          // Play test alarm sound - using a simple beep sound
+          const testAlarmUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAXBnid3+u2aSIGMI3O8+PVYB4G';
+          
+          // For web platform, use a simple audio API tone
+          if (!Capacitor.isNativePlatform()) {
+            // Create a simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // 800 Hz beep
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 5); // Play for 5 seconds
+          } else {
+            // For native platform, try to play a system sound or our placeholder
+            play(testAlarmUrl, 1.0);
+          }
+          
+          toast.success("Test alarm triggered! Check if it woke your device.");
+          
+          // Stop after 5 seconds
+          setTimeout(() => {
+            stop();
+            setIsTestingAlarm(false);
+          }, 5000);
+          
+        } catch (error) {
+          console.error('Test alarm error:', error);
+          toast.error("Test alarm failed. Check permissions.");
+          setIsTestingAlarm(false);
+        }
+      }, 10000);
+
+      toast.success("Test alarm scheduled for 10 seconds. Lock your screen to test!");
+      
+    } catch (error) {
+      console.error('Failed to schedule test alarm:', error);
+      toast.error("Failed to schedule test alarm");
+      setIsTestingAlarm(false);
+    }
+  };
+
+  useEffect(() => {
+    // Listen for notification actions
+    const handleNotificationAction = async (notification: any) => {
+      if (notification.notification.extra?.isTestAlarm) {
+        // This handles the case when notification triggers while app is closed
+        try {
+          const testAlarmUrl = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmAXBnid3+u2aSIGMI3O8+PVYB4G';
+          
+          if (!Capacitor.isNativePlatform()) {
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 5);
+          } else {
+            play(testAlarmUrl, 1.0);
+          }
+          
+          setTimeout(() => {
+            stop();
+            setIsTestingAlarm(false);
+          }, 5000);
+        } catch (error) {
+          console.error('Test alarm playback error:', error);
+        }
+      }
+    };
+
+    if (Capacitor.isNativePlatform()) {
+      LocalNotifications.addListener('localNotificationReceived', handleNotificationAction);
+      LocalNotifications.addListener('localNotificationActionPerformed', handleNotificationAction);
+      
+      return () => {
+        LocalNotifications.removeAllListeners();
+      };
+    }
+  }, [play, stop]);
 
   const troubleshootingSteps = PermissionsManager.getTroubleshootingSteps();
 
@@ -231,13 +377,11 @@ export const TroubleshootTab = () => {
         <Button 
           variant="secondary" 
           className="w-full"
-          onClick={() => {
-            // This would trigger a test alarm
-            alert('Test alarm functionality would be triggered here. Set a 1-minute test alarm to verify all permissions work correctly.');
-          }}
+          onClick={scheduleTestAlarm}
+          disabled={isTestingAlarm}
         >
           <Clock className="h-4 w-4 mr-2" />
-          Set Test Alarm (1 minute)
+          {isTestingAlarm ? "Test Alarm Active..." : "Set Test Alarm (10 seconds)"}
         </Button>
       </Card>
 
