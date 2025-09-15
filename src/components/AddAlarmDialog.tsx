@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Plus, Upload, Volume2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlarmEditDialog } from "./AlarmEditDialog";
+import { TimePickerDialog } from "./TimePickerDialog";
 import { defaultTracks } from "@/data/motivationalTracks";
 import { toast } from "sonner";
 
@@ -275,25 +275,21 @@ export const AddAlarmDialog = ({
         </DialogContent>
       </Dialog>
 
-      <AlarmEditDialog
-        isOpen={timePickerOpen}
-        onClose={editingAlarm ? handleCancelEdit : () => setTimePickerOpen(false)}
+      <TimePickerDialog
+        open={timePickerOpen}
+        onOpenChange={editingAlarm ? handleCancelEdit : setTimePickerOpen}
         initialTime={time}
         initialLabel={label}
         initialRepeatDays={repeatDays}
         initialSoundName={soundName}
-        initialMissionEnabled={editingAlarm?.missionEnabled}
-        initialMissionCount={editingAlarm?.missionCount}
+        initialSoundPowerUp={editingAlarm?.soundPowerUp}
         initialSnoozeEnabled={editingAlarm?.snoozeEnabled}
         initialSnoozeDuration={editingAlarm?.snoozeDuration}
         initialMaxSnoozes={editingAlarm?.maxSnoozes}
-        initialSoundPowerUp={editingAlarm?.soundPowerUp}
-        initialVolume={editingAlarm?.volume}
         initialWakeUpCheckEnabled={editingAlarm?.wakeUpCheckEnabled}
         initialWakeUpCheckType={editingAlarm?.wakeUpCheckType}
         initialWallpaper={editingAlarm?.wallpaper}
         onSave={handleAdvancedSave}
-        title={editingAlarm ? "Edit Alarm" : "Create Alarm"}
       />
     </>
   );

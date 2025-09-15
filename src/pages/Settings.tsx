@@ -3,18 +3,18 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TroubleshootTab } from "@/components/TroubleshootTab";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Preferences } from "@capacitor/preferences";
 import { 
   ChevronRight, 
   Crown, 
   Shield, 
-  FileText,
-  Wrench,
+  Calendar as CalendarIcon,
   HelpCircle,
   MessageSquare,
+  FileText,
   Info,
+  X,
   ArrowRight,
   ArrowLeft
 } from "lucide-react";
@@ -22,7 +22,9 @@ import { useState, useEffect } from "react";
 import { PermissionsManager } from "@/utils/permissions";
 
 export const Settings = () => {
-  const [activeTab, setActiveTab] = useState("general");
+  const [generalOpen, setGeneralOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [tutorialStep, setTutorialStep] = useState(0);
   const [preventPowerOff, setPreventPowerOff] = useState(false);
   const [wakeLock, setWakeLock] = useState<any>(null);
@@ -158,11 +160,44 @@ export const Settings = () => {
     }
   ];
 
+  const settingsItems = [
+    {
+      icon: FileText,
+      title: "General",
+      hasArrow: true,
+      action: () => setGeneralOpen(true)
+    },
+    {
+      icon: HelpCircle,
+      title: "FAQ",
+      hasArrow: true,
+      action: () => setFaqOpen(true)
+    },
+    {
+      icon: MessageSquare,
+      title: "Send feedback",
+      hasArrow: true,
+      action: () => window.location.href = "mailto:asuite20@gmail.com?subject=Feedback"
+    },
+    {
+      icon: FileText,
+      title: "Report",
+      hasArrow: true,
+      action: () => window.location.href = "mailto:asuite20@gmail.com?subject=Report"
+    },
+    {
+      icon: Info,
+      title: "About",
+      hasArrow: true,
+      action: () => setAboutOpen(true)
+    },
+  ];
+
   const nextTutorialStep = () => {
     if (tutorialStep < tutorialSteps.length - 1) {
       setTutorialStep(tutorialStep + 1);
     } else {
-      setActiveTab("general");
+      setFaqOpen(false);
       setTutorialStep(0);
     }
   };
@@ -171,6 +206,11 @@ export const Settings = () => {
     if (tutorialStep > 0) {
       setTutorialStep(tutorialStep - 1);
     }
+  };
+
+  const closeTutorial = () => {
+    setFaqOpen(false);
+    setTutorialStep(0);
   };
 
   return (
@@ -246,133 +286,125 @@ export const Settings = () => {
                 />
               </div>
             </div>
+
           </div>
         </Card>
 
-        {/* Settings Tabs */}
-        <Card className="bg-gradient-card border-border/50 shadow-card">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-muted/20">
-              <TabsTrigger value="general" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">General</span>
-              </TabsTrigger>
-              <TabsTrigger value="troubleshoot" className="flex items-center gap-2">
-                <Wrench className="h-4 w-4" />
-                <span className="hidden sm:inline">Troubleshoot</span>
-              </TabsTrigger>
-              <TabsTrigger value="faq" className="flex items-center gap-2">
-                <HelpCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">FAQ</span>
-              </TabsTrigger>
-              <TabsTrigger value="about" className="flex items-center gap-2">
-                <Info className="h-4 w-4" />
-                <span className="hidden sm:inline">About</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <div className="p-6">
-              <TabsContent value="general" className="mt-0 space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Version Motivated</h3>
-                  <p className="text-muted-foreground mb-4">
-                    You're using the latest version of our motivation and productivity app, designed to help you achieve peak performance every day.
-                  </p>
-                  <div className="space-y-3">
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between"
-                      onClick={() => window.location.href = "mailto:asuite20@gmail.com?subject=Feedback"}
-                    >
-                      <div className="flex items-center gap-3">
-                        <MessageSquare className="h-5 w-5" />
-                        <span>Send Feedback</span>
-                      </div>
-                      <ChevronRight className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-between"
-                      onClick={() => window.location.href = "mailto:asuite20@gmail.com?subject=Report"}
-                    >
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5" />
-                        <span>Report Issue</span>
-                      </div>
-                      <ChevronRight className="h-5 w-5" />
-                    </Button>
-                  </div>
+        {/* Settings List */}
+        <div className="space-y-2">
+          {settingsItems.map((item, index) => (
+            <Card
+              key={index}
+              className="bg-card/50 border-border/30 hover:bg-card/70 transition-colors"
+            >
+              <Button
+                variant="ghost"
+                className="w-full justify-between p-4 h-auto"
+                onClick={item.action}
+              >
+                <div className="flex items-center gap-3">
+                  <item.icon className="h-5 w-5 text-muted-foreground" />
+                  <span className="font-medium text-foreground">{item.title}</span>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="troubleshoot" className="mt-0">
-                <TroubleshootTab />
-              </TabsContent>
-
-              <TabsContent value="faq" className="mt-0 space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-4">
-                    {tutorialSteps[tutorialStep].title}
-                  </h3>
-                  <p className="text-muted-foreground text-base leading-relaxed mb-6">
-                    {tutorialSteps[tutorialStep].content}
-                  </p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-1">
-                      {tutorialSteps.map((_, index) => (
-                        <div
-                          key={index}
-                          className={`h-2 w-2 rounded-full transition-colors ${
-                            index === tutorialStep
-                              ? "bg-primary"
-                              : "bg-muted"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    
-                    <div className="flex gap-2">
-                      {tutorialStep > 0 && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={prevTutorialStep}
-                          className="flex items-center gap-2"
-                        >
-                          <ArrowLeft className="h-4 w-4" />
-                          Back
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        onClick={nextTutorialStep}
-                        className="flex items-center gap-2"
-                      >
-                        {tutorialStep === tutorialSteps.length - 1 ? "Finish" : "Next"}
-                        {tutorialStep < tutorialSteps.length - 1 && (
-                          <ArrowRight className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="about" className="mt-0 space-y-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Built to be the Best</h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    This app was crafted with one mission in mind: to help you become the best version of yourself. 
-                    Every feature, from smart alarms to daily inspiration, is designed to push you toward excellence 
-                    and peak performance in all areas of your life.
-                  </p>
-                </div>
-              </TabsContent>
-            </div>
-          </Tabs>
-        </Card>
+                {item.hasArrow && (
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                )}
+              </Button>
+            </Card>
+          ))}
+        </div>
       </div>
+
+      {/* General Dialog */}
+      <Dialog open={generalOpen} onOpenChange={setGeneralOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Version Motivated</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              You're using the latest version of our motivation and productivity app, designed to help you achieve peak performance every day.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* FAQ Tutorial Dialog */}
+      <Dialog open={faqOpen} onOpenChange={setFaqOpen}>
+        <DialogContent className="bg-card border-border max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-foreground">
+                {tutorialSteps[tutorialStep].title}
+              </DialogTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeTutorial}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4">
+            <DialogDescription className="text-muted-foreground text-base leading-relaxed">
+              {tutorialSteps[tutorialStep].content}
+            </DialogDescription>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex gap-1">
+                {tutorialSteps.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-2 w-2 rounded-full transition-colors ${
+                      index === tutorialStep
+                        ? "bg-primary"
+                        : "bg-muted"
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              <div className="flex gap-2">
+                {tutorialStep > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={prevTutorialStep}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  onClick={nextTutorialStep}
+                  className="flex items-center gap-2"
+                >
+                  {tutorialStep === tutorialSteps.length - 1 ? "Finish" : "Next"}
+                  {tutorialStep < tutorialSteps.length - 1 && (
+                    <ArrowRight className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* About Dialog */}
+      <Dialog open={aboutOpen} onOpenChange={setAboutOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Built to be the Best</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              This app was crafted with one mission in mind: to help you become the best version of yourself. 
+              Every feature, from smart alarms to daily inspiration, is designed to push you toward excellence 
+              and peak performance in all areas of your life.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

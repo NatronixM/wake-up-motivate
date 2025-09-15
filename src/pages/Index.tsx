@@ -82,85 +82,19 @@ const Index = () => {
     }
   ]);
 
-  const handleToggleAlarm = async (id: string, active: boolean) => {
+  const handleToggleAlarm = (id: string, active: boolean) => {
     setAlarms(prev => 
       prev.map(alarm => 
         alarm.id === id ? { ...alarm, isActive: active } : alarm
       )
     );
+    toast.success(active ? "Alarm activated" : "Alarm deactivated");
+  };
 
-    // Handle alarm scheduling
+  const handleEditAlarm = (id: string) => {
     const alarm = alarms.find(a => a.id === id);
     if (alarm) {
-      try {
-        const { alarmManager } = await import('@/services/alarmManager');
-        
-        if (active) {
-          await alarmManager.scheduleAlarm({
-            id: alarm.id,
-            time: alarm.time,
-            label: alarm.label,
-            isActive: true,
-            repeatDays: alarm.repeatDays,
-            soundName: alarm.soundName,
-            volume: alarm.volume,
-            missionEnabled: alarm.missionEnabled,
-            missionCount: alarm.missionCount
-          });
-          toast.success("Alarm activated and scheduled!");
-        } else {
-          await alarmManager.cancelAlarm(alarm.id);
-          toast.success("Alarm deactivated and cancelled");
-        }
-      } catch (error) {
-        console.error('Failed to manage alarm:', error);
-        toast.error("Failed to manage alarm scheduling");
-      }
-    }
-  };
-
-  const handleEditAlarm = (id: string, updates?: Partial<Alarm>) => {
-    if (updates) {
-      // Handle direct updates (like time changes)
-      handleUpdateAlarmDirect(id, updates);
-    } else {
-      // Open edit dialog
-      const alarm = alarms.find(a => a.id === id);
-      if (alarm) {
-        setEditingAlarm(alarm);
-      }
-    }
-  };
-
-  const handleUpdateAlarmDirect = async (id: string, updates: Partial<Alarm>) => {
-    const updatedAlarms = alarms.map(alarm => 
-      alarm.id === id ? { ...alarm, ...updates } : alarm
-    );
-    setAlarms(updatedAlarms);
-    
-    // Update alarm scheduling if alarm is active
-    const updatedAlarm = updatedAlarms.find(a => a.id === id);
-    if (updatedAlarm?.isActive) {
-      try {
-        const { alarmManager } = await import('@/services/alarmManager');
-        await alarmManager.updateAlarm({
-          id: updatedAlarm.id,
-          time: updatedAlarm.time,
-          label: updatedAlarm.label,
-          isActive: updatedAlarm.isActive,
-          repeatDays: updatedAlarm.repeatDays,
-          soundName: updatedAlarm.soundName,
-          volume: updatedAlarm.volume,
-          missionEnabled: updatedAlarm.missionEnabled,
-          missionCount: updatedAlarm.missionCount
-        });
-        toast.success("Alarm updated and rescheduled!");
-      } catch (error) {
-        console.error('Failed to reschedule alarm:', error);
-        toast.error("Failed to reschedule alarm");
-      }
-    } else {
-      toast.success("Alarm updated!");
+      setEditingAlarm(alarm);
     }
   };
 
@@ -328,21 +262,21 @@ const Index = () => {
         <div className="space-y-4">
           {alarms.map((alarm) => (
             <div key={alarm.id} className="space-y-2">
-                <AlarmCard
-                  id={alarm.id}
-                  time={alarm.time}
-                  label={alarm.label}
-                  isActive={alarm.isActive}
-                  repeatDays={alarm.repeatDays}
-                  soundName={alarm.soundName}
-                  missionEnabled={alarm.missionEnabled}
-                  missionCount={alarm.missionCount}
-                  onToggle={handleToggleAlarm}
-                  onEdit={handleEditAlarm}
-                  onDelete={handleDeleteAlarm}
-                  onSkipOnce={handleSkipOnce}
-                  onDuplicate={handleDuplicate}
-                />
+              <AlarmCard
+                id={alarm.id}
+                time={alarm.time}
+                label={alarm.label}
+                isActive={alarm.isActive}
+                repeatDays={alarm.repeatDays}
+                soundName={alarm.soundName}
+                missionEnabled={alarm.missionEnabled}
+                missionCount={alarm.missionCount}
+                onToggle={handleToggleAlarm}
+                onEdit={handleEditAlarm}
+                onDelete={handleDeleteAlarm}
+                onSkipOnce={handleSkipOnce}
+                onDuplicate={handleDuplicate}
+              />
               {/* Test Alarm Button */}
               <Button
                 variant="outline"
