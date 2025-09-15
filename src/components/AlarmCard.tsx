@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Clock, Volume2, Repeat, Zap } from "lucide-react";
+import { Clock, Volume2, Repeat, Zap, Edit } from "lucide-react";
 import { AlarmContextMenu } from "./AlarmContextMenu";
 import { Badge } from "@/components/ui/badge";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { defaultTracks } from "@/data/motivationalTracks";
+import { TimePickerDialog } from "./TimePickerDialog";
 
 interface AlarmCardProps {
   id: string;
@@ -18,7 +19,7 @@ interface AlarmCardProps {
   missionEnabled?: boolean;
   missionCount?: number;
   onToggle: (id: string, active: boolean) => void;
-  onEdit: (id: string) => void;
+  onEdit: (id: string, updates?: any) => void;
   onDelete: (id: string) => void;
   onSkipOnce?: (id: string) => void;
   onDuplicate?: (id: string) => void;
@@ -40,6 +41,7 @@ export const AlarmCard = ({
   onDuplicate,
 }: AlarmCardProps) => {
   const [isEnabled, setIsEnabled] = useState(isActive);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const { play, stop, isPlaying } = useAudioPlayer();
 
   const handleToggle = (checked: boolean) => {
@@ -71,6 +73,13 @@ export const AlarmCard = ({
     }
   };
 
+  const handleTimeChange = (newTime: string) => {
+    // Trigger edit with updated time - this will be handled by parent component
+    if (onEdit) {
+      onEdit(id, { time: newTime });
+    }
+  };
+
   const formatTime = (timeString: string) => {
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours, 10);
@@ -86,12 +95,16 @@ export const AlarmCard = ({
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-light text-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowTimePicker(true)}
+              className="text-4xl font-light text-foreground hover:bg-primary/10 p-1 h-auto flex items-center gap-2"
+            >
               {displayTime}
-            </span>
-            <span className="text-lg text-muted-foreground font-medium">
-              {period}
-            </span>
+              <span className="text-lg text-muted-foreground font-medium">{period}</span>
+              <Edit className="h-4 w-4 opacity-60" />
+            </Button>
           </div>
           
           {label && (
@@ -138,6 +151,15 @@ export const AlarmCard = ({
           />
         </div>
       </div>
+      
+      {/* Time Picker Dialog */}
+      <TimePickerDialog
+        isOpen={showTimePicker}
+        onClose={() => setShowTimePicker(false)}
+        initialTime={time}
+        onTimeSelect={handleTimeChange}
+        title="Edit Alarm Time"
+      />
     </Card>
   );
 };
