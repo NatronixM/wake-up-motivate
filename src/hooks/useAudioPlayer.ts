@@ -5,7 +5,7 @@ export const useAudioPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<string | null>(null);
 
-  const play = (url: string, volume: number = 0.8) => {
+  const play = (url: string, volume: number = 0.8, loop: boolean = false) => {
     // Stop current audio if playing
     if (audio) {
       audio.pause();
@@ -14,6 +14,7 @@ export const useAudioPlayer = () => {
 
     const newAudio = new Audio(url);
     newAudio.volume = volume;
+    newAudio.loop = loop; // Set loop property
     
     newAudio.onloadeddata = () => {
       newAudio.play().catch((error) => {
@@ -25,8 +26,10 @@ export const useAudioPlayer = () => {
     newAudio.onplay = () => setIsPlaying(true);
     newAudio.onpause = () => setIsPlaying(false);
     newAudio.onended = () => {
-      setIsPlaying(false);
-      setCurrentTrack(null);
+      if (!loop) {
+        setIsPlaying(false);
+        setCurrentTrack(null);
+      }
     };
 
     setAudio(newAudio);

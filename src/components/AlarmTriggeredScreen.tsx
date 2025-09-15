@@ -20,7 +20,7 @@ export const AlarmTriggeredScreen = ({
   useEffect(() => {
     // Start playing the alarm sound on loop
     if (alarm.soundName) {
-      play(alarm.soundName, (alarm.volume || 80) / 100);
+      play(alarm.soundName, (alarm.volume || 80) / 100, true); // Enable looping
     }
 
     // Keep screen awake if supported
