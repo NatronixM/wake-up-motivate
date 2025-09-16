@@ -7,6 +7,7 @@ import { MemoryGameMission } from "./missions/MemoryGameMission";
 import { ShakeMission } from "./missions/ShakeMission";
 import { PhotoMission } from "./missions/PhotoMission";
 import { BarcodeMission } from "./missions/BarcodeMission";
+import { AdBanner } from "./AdBanner";
 import { AlarmClock, X } from "lucide-react";
 
 interface AlarmDismissalScreenProps {
@@ -133,6 +134,11 @@ export const AlarmDismissalScreen = ({
         <p className="text-lg opacity-90">{alarmLabel}</p>
       </div>
 
+      {/* Top Banner Ad */}
+      <div className="px-4 pt-2">
+        <AdBanner placement="top" />
+      </div>
+
       {/* Mission Progress */}
       {missionEnabled && selectedMissions.length > 0 && (
         <div className="p-4 bg-secondary/50">
@@ -213,6 +219,11 @@ export const AlarmDismissalScreen = ({
             </Button>
           )}
         </div>
+      </div>
+
+      {/* Bottom Banner Ad */}
+      <div className="px-4 pb-2">
+        <AdBanner placement="bottom" />
       </div>
     </div>
   );
