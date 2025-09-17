@@ -48,8 +48,8 @@ export const AlarmCard = ({
   };
 
   const handlePreview = () => {
-    // Find the track by name
-    const track = defaultTracks.find(t => t.name === soundName);
+    // Find the track by name or URL
+    const track = defaultTracks.find(t => t.name === soundName || t.url === soundName);
     if (track) {
       if (isPlaying) {
         stop();
@@ -80,6 +80,17 @@ export const AlarmCard = ({
   };
 
   const { time: displayTime, period } = formatTime(time);
+
+  // Get the display name for the sound (show track name instead of URL)
+  const getDisplaySoundName = (soundName: string) => {
+    // First check if it's already a track name
+    const trackByName = defaultTracks.find(track => track.name === soundName);
+    if (trackByName) return soundName;
+    
+    // If it's a URL, find the matching track and return its name
+    const trackByUrl = defaultTracks.find(track => track.url === soundName);
+    return trackByUrl ? trackByUrl.name : soundName;
+  };
 
   return (
     <Card className="bg-gradient-card border-border/50 p-6 shadow-card backdrop-blur-sm">
@@ -117,7 +128,7 @@ export const AlarmCard = ({
             
             <div className="flex items-center gap-1">
               <Volume2 className="h-3 w-3" />
-              <span>{soundName}</span>
+              <span>{getDisplaySoundName(soundName)}</span>
             </div>
           </div>
         </div>
