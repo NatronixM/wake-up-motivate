@@ -134,17 +134,17 @@ export const TimePickerDialog = ({
   const handleMissionToggle = (missionId: string) => {
     setSelectedMissions(prev => 
       prev.includes(missionId)
-        ? prev.filter(id => id !== missionId)
-        : [...prev, missionId]
+        ? []  // If deselecting, clear all selections
+        : [missionId]  // If selecting, only allow this one
     );
   };
 
   const handleSave = () => {
-    // Validate that if missions are enabled, at least 3 are selected
-    if (missionEnabled && selectedMissions.length < 3) {
+    // Validate that if missions are enabled, at least 1 is selected
+    if (missionEnabled && selectedMissions.length === 0) {
       toast({
-        title: "Mission Selection Required",
-        description: "Please select at least 3 missions to enable mission-based alarm dismissal.",
+        title: "Mission Required",
+        description: "Please select one mission to enable mission mode.",
         variant: "destructive",
       });
       return;
@@ -234,56 +234,53 @@ export const TimePickerDialog = ({
           {/* Mission Section */}
           <Card className="bg-gradient-card p-4 border-border/50">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label className="text-lg">Mission</Label>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">{selectedMissions.length}/5</span>
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
+                <div className="flex items-center justify-between">
+                  <Label className="text-lg">Mission</Label>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{selectedMissions.length}/1</span>
+                    <div className="flex gap-1">
                       <div 
-                        key={i}
                         className={`w-3 h-3 rounded-full ${
-                          i < selectedMissions.length ? 'bg-primary' : 'bg-muted border border-border'
+                          selectedMissions.length > 0 ? 'bg-primary' : 'bg-muted border border-border'
                         }`}
                       />
-                    ))}
+                    </div>
                   </div>
                 </div>
-              </div>
               
               {missionEnabled && (
-                <div className="space-y-3">
-                  <p className="text-sm text-muted-foreground">
-                    Select missions to complete for alarm dismissal (must complete 3 selected missions):
-                  </p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {missionTypes.map((mission) => {
-                      const IconComponent = mission.icon;
-                      const isSelected = selectedMissions.includes(mission.id);
-                      return (
-                        <Card 
-                          key={mission.id} 
-                          className={`p-3 text-center border cursor-pointer transition-all ${
-                            isSelected 
-                              ? 'bg-primary/20 border-primary shadow-md' 
-                              : 'border-dashed border-border hover:border-primary/50'
-                          }`}
-                          onClick={() => handleMissionToggle(mission.id)}
-                        >
-                          <IconComponent className={`h-6 w-6 mx-auto mb-2 ${
-                            isSelected ? 'text-primary' : 'text-muted-foreground'
-                          }`} />
-                          <div className="text-xs font-medium">{mission.name}</div>
-                        </Card>
-                      );
-                    })}
-                  </div>
-                  {selectedMissions.length < 3 && (
-                    <p className="text-xs text-orange-600 text-center">
-                      ⚠️ Select at least 3 missions to enable alarm dismissal
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Select one mission type to complete multiple times for alarm dismissal:
                     </p>
-                  )}
-                </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {missionTypes.map((mission) => {
+                        const IconComponent = mission.icon;
+                        const isSelected = selectedMissions.includes(mission.id);
+                        return (
+                          <Card 
+                            key={mission.id} 
+                            className={`p-3 text-center border cursor-pointer transition-all ${
+                              isSelected 
+                                ? 'bg-primary/20 border-primary shadow-md' 
+                                : 'border-dashed border-border hover:border-primary/50'
+                            }`}
+                            onClick={() => handleMissionToggle(mission.id)}
+                          >
+                            <IconComponent className={`h-6 w-6 mx-auto mb-2 ${
+                              isSelected ? 'text-primary' : 'text-muted-foreground'
+                            }`} />
+                            <div className="text-xs font-medium">{mission.name}</div>
+                          </Card>
+                        );
+                      })}
+                    </div>
+                    {selectedMissions.length === 0 && (
+                      <p className="text-xs text-orange-600 text-center">
+                        ⚠️ Select one mission to enable alarm dismissal
+                      </p>
+                    )}
+                  </div>
               )}
               
               <div className="flex items-center justify-between">

@@ -66,12 +66,29 @@ export const AlarmDismissalScreen = ({
     missionTypes.find(type => type.id === missionId)
   ).filter(Boolean);
 
+  // Get required completions based on mission type
+  const getRequiredCompletions = (missionId: string) => {
+    switch (missionId) {
+      case 'photo':
+        return 2;
+      case 'math':
+      case 'memory':
+      case 'shake':
+      case 'barcode':
+      default:
+        return 3;
+    }
+  };
+
+  const currentMissionId = selectedMissions[0];
+  const requiredCompletions = currentMissionId ? getRequiredCompletions(currentMissionId) : 3;
+
   const handleMissionComplete = () => {
     const newCompleted = [...completedMissions, 'completed'];
     setCompletedMissions(newCompleted);
     
-    // Check if we need 3 completed missions and we have them
-    if (newCompleted.length >= 3) {
+    // Check if we have completed the required number for this mission type
+    if (newCompleted.length >= requiredCompletions) {
       // Required missions completed, check if wake-up check is needed
       if (wakeUpCheckEnabled && !wakeUpCheckCompleted) {
         // Wake-up check will be handled by the component
@@ -86,16 +103,15 @@ export const AlarmDismissalScreen = ({
   const handleWakeUpCheckComplete = () => {
     setWakeUpCheckCompleted(true);
     // Check if all other requirements are met
-    if (!missionEnabled || completedMissions.length >= 3) {
+    if (!missionEnabled || completedMissions.length >= requiredCompletions) {
       setTimeout(() => onDismiss(), 1000);
     }
   };
 
   const canDismissWithoutMissions = (!missionEnabled || selectedMissions.length === 0) && 
                                    (!wakeUpCheckEnabled || wakeUpCheckCompleted);
-  const requiredMissions = 3;
-  const progress = missionEnabled && selectedMissions.length > 0 ? (completedMissions.length / requiredMissions) * 100 : 0;
-  const allMissionsCompleted = missionEnabled && selectedMissions.length > 0 && completedMissions.length >= requiredMissions;
+  const progress = missionEnabled && selectedMissions.length > 0 ? (completedMissions.length / requiredCompletions) * 100 : 0;
+  const allMissionsCompleted = missionEnabled && selectedMissions.length > 0 && completedMissions.length >= requiredCompletions;
 
   // Render wake-up check mission if needed
   const renderWakeUpCheck = () => {
@@ -141,12 +157,12 @@ export const AlarmDismissalScreen = ({
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Mission Progress</span>
             <span className="text-sm text-muted-foreground">
-              {completedMissions.length} / {requiredMissions} completed
+              {completedMissions.length} / {requiredCompletions} completed
             </span>
           </div>
           <Progress value={progress} className="h-2" />
           <p className="text-xs text-muted-foreground mt-1 text-center">
-            Complete the same mission 3 times to dismiss alarm
+            Complete the same mission {requiredCompletions} times to dismiss alarm
           </p>
         </div>
       )}
@@ -165,7 +181,7 @@ export const AlarmDismissalScreen = ({
                   <div className="mb-2 text-center">
                     <h3 className="text-lg font-semibold">{selectedMission.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      Complete {3 - completedMissions.length} more times
+                      Complete {requiredCompletions - completedMissions.length} more times
                     </p>
                   </div>
                   <MissionComponent
