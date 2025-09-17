@@ -22,6 +22,18 @@ export interface Alarm {
 }
 
 export class AlarmScheduler {
+  // Track last trigger minute per alarm to prevent re-triggering within the same minute
+  private static lastTriggeredKey: Record<string, string> = {};
+
+  private static getMinuteKey(date: Date): string {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  }
+
   // Schedule an alarm with native notifications
   static async scheduleAlarm(alarm: Alarm): Promise<boolean> {
     try {
@@ -163,6 +175,11 @@ export class AlarmScheduler {
       const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
       
       if (alarm.isActive && alarm.time === currentTime) {
+        const minuteKey = this.getMinuteKey(now);
+        if (this.lastTriggeredKey[alarm.id] === minuteKey) {
+          return; // Already triggered in this minute
+        }
+        this.lastTriggeredKey[alarm.id] = minuteKey;
         this.triggerWebAlarm(alarm);
       }
     };

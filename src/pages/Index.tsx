@@ -31,6 +31,16 @@ const Index = () => {
   const [activeAlarm, setActiveAlarm] = useState<Alarm | null>(null);
   const [triggeredAlarm, setTriggeredAlarm] = useState<Alarm | null>(null);
   const [snoozeCounts, setSnoozeCounts] = useState<Record<string, number>>({});
+  const [lastTriggeredMinute, setLastTriggeredMinute] = useState<Record<string, string>>({});
+
+  const getMinuteKey = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    const hh = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+  };
   const [alarms, setAlarms] = useState<Alarm[]>([
     {
       id: '1',
@@ -85,17 +95,18 @@ const Index = () => {
       setAlarms(storedAlarms);
     }
 
-    // Check for triggered alarms every minute
     const checkAlarms = () => {
       const now = new Date();
       const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      const minuteKey = getMinuteKey(now);
       
-      const activeAlarms = alarms.filter(alarm => alarm.isActive);
-      const alarmToTrigger = activeAlarms.find(alarm => 
-        alarm.time === currentTime && !triggeredAlarm
+      const activeList = alarms.filter(a => a.isActive);
+      const alarmToTrigger = activeList.find(a => 
+        a.time === currentTime && !triggeredAlarm && lastTriggeredMinute[a.id] !== minuteKey
       );
       
       if (alarmToTrigger) {
+        setLastTriggeredMinute(prev => ({ ...prev, [alarmToTrigger.id]: minuteKey }));
         setTriggeredAlarm(alarmToTrigger);
       }
     };
@@ -106,8 +117,11 @@ const Index = () => {
 
     // Listen for alarm messages from service worker
     const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === 'ALARM_TRIGGERED' && event.data.alarm) {
-        setTriggeredAlarm(event.data.alarm);
+      if (event.data?.type === 'ALARM_TRIGGERED' && event.data.alarm) {
+        const alarm = event.data.alarm as Alarm;
+        const minuteKey = getMinuteKey(new Date());
+        setLastTriggeredMinute(prev => ({ ...prev, [alarm.id]: minuteKey }));
+        setTriggeredAlarm(alarm);
       }
     };
 
@@ -117,7 +131,7 @@ const Index = () => {
       clearInterval(interval);
       window.removeEventListener('message', handleMessage);
     };
-  }, [alarms, triggeredAlarm]);
+  }, [alarms, triggeredAlarm, lastTriggeredMinute]);
 
   const handleToggleAlarm = async (id: string, active: boolean) => {
     const updatedAlarms = alarms.map(alarm => 
@@ -213,6 +227,11 @@ const Index = () => {
   };
 
   const handleDismissAlarm = () => {
+    const id = triggeredAlarm?.id || activeAlarm?.id;
+    if (id) {
+      const mk = getMinuteKey(new Date());
+      setLastTriggeredMinute(prev => ({ ...prev, [id]: mk }));
+    }
     setActiveAlarm(null);
     setTriggeredAlarm(null);
     AlarmScheduler.stopAlarmSound();
@@ -222,6 +241,10 @@ const Index = () => {
   const handleSnoozeAlarm = () => {
     const currentAlarm = activeAlarm || triggeredAlarm;
     if (currentAlarm) {
+      // Prevent re-trigger within the same minute
+      const mk = getMinuteKey(new Date());
+      setLastTriggeredMinute(prev => ({ ...prev, [currentAlarm.id]: mk }));
+
       const currentCount = snoozeCounts[currentAlarm.id] || 0;
       setSnoozeCounts(prev => ({
         ...prev,
@@ -234,12 +257,12 @@ const Index = () => {
       
       const snoozeTimeString = `${snoozeTime.getHours().toString().padStart(2, '0')}:${snoozeTime.getMinutes().toString().padStart(2, '0')}`;
       
-      const snoozedAlarm = {
+      const snoozedAlarm: Alarm = {
         ...currentAlarm,
         time: snoozeTimeString,
         currentSnoozeCount: currentCount + 1
       };
-
+  
       AlarmScheduler.scheduleAlarm(snoozedAlarm);
       AlarmScheduler.stopAlarmSound();
       setActiveAlarm(null);
