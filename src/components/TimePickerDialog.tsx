@@ -69,7 +69,7 @@ export const TimePickerDialog = ({
   initialTime,
   initialLabel = "",
   initialRepeatDays = [],
-  initialSoundName = "Rise & Shine",
+  initialSoundName = defaultTracks[0].name,
   initialMissionEnabled = false,
   initialSoundPowerUp = 10,
   initialSnoozeEnabled = true,
@@ -88,8 +88,8 @@ export const TimePickerDialog = ({
   const [label, setLabel] = useState(initialLabel);
   const [repeatDays, setRepeatDays] = useState<string[]>(initialRepeatDays);
   const [selectedTrack, setSelectedTrack] = useState<MotivationalTrack | null>(
-    defaultTracks.find(track => track.url === initialSoundName) || 
     defaultTracks.find(track => track.name === initialSoundName) || 
+    defaultTracks.find(track => track.url === initialSoundName) || 
     defaultTracks[0]
   );
   const [missionEnabled, setMissionEnabled] = useState(initialMissionEnabled);
@@ -155,7 +155,7 @@ export const TimePickerDialog = ({
       label,
       isActive: true,
       repeatDays,
-      soundName: selectedTrack?.url || defaultTracks[0].url, // Use track URL instead of name
+      soundName: selectedTrack?.name || defaultTracks[0].name, // Use track name instead of URL
       missionEnabled,
       selectedMissions,
       snoozeEnabled,

@@ -95,7 +95,7 @@ export const AddAlarmDialog = ({
   const [label, setLabel] = useState(editingAlarm?.label || "");
   const [isActive, setIsActive] = useState(editingAlarm?.isActive ?? true);
   const [repeatDays, setRepeatDays] = useState<string[]>(editingAlarm?.repeatDays || []);
-  const [soundName, setSoundName] = useState(editingAlarm?.soundName || defaultTracks[0].url);
+  const [soundName, setSoundName] = useState(editingAlarm?.soundName || defaultTracks[0].name);
 
   // Open the appropriate dialog when editing
   useEffect(() => {
@@ -131,7 +131,7 @@ export const AddAlarmDialog = ({
     setTime("07:00");
     setLabel("");
     setRepeatDays([]);
-    setSoundName(defaultTracks[0].url);
+    setSoundName(defaultTracks[0].name);
   };
 
   const handleAdvancedSave = (alarmData: any) => {
@@ -224,7 +224,7 @@ export const AddAlarmDialog = ({
                 </SelectTrigger>
                 <SelectContent>
             {freeTracks.map((track) => (
-              <SelectItem key={track.id} value={track.url}>
+              <SelectItem key={track.id} value={track.name}>
                 {track.name}
               </SelectItem>
             ))}
