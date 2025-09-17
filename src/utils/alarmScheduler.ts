@@ -12,7 +12,7 @@ export interface Alarm {
   soundName?: string;
   volume?: number;
   missionEnabled?: boolean;
-  missionCount?: number;
+  selectedMissions?: string[];
   snoozeEnabled?: boolean;
   snoozeDuration?: number;
   maxSnoozes?: number;

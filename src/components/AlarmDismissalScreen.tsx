@@ -15,7 +15,7 @@ interface AlarmDismissalScreenProps {
   alarmLabel: string;
   alarmTime: string;
   missionEnabled: boolean;
-  missionCount: number;
+  selectedMissions: string[];
   snoozeEnabled: boolean;
   snoozeDuration: number;
   maxSnoozes: number;
@@ -28,11 +28,11 @@ interface AlarmDismissalScreenProps {
 }
 
 const missionTypes = [
-  { name: "Math Problems", component: MathMission },
-  { name: "Memory Game", component: MemoryGameMission },
-  { name: "Shake Phone", component: ShakeMission },
-  { name: "Photo Taking", component: PhotoMission },
-  { name: "Barcode Scan", component: BarcodeMission },
+  { id: "math", name: "Math Problems", component: MathMission },
+  { id: "memory", name: "Memory Game", component: MemoryGameMission },
+  { id: "shake", name: "Shake Phone", component: ShakeMission },
+  { id: "photo", name: "Photo Taking", component: PhotoMission },
+  { id: "barcode", name: "Barcode Scan", component: BarcodeMission },
 ];
 
 export const AlarmDismissalScreen = ({
@@ -40,7 +40,7 @@ export const AlarmDismissalScreen = ({
   alarmLabel,
   alarmTime,
   missionEnabled,
-  missionCount,
+  selectedMissions,
   snoozeEnabled,
   snoozeDuration,
   maxSnoozes,
@@ -51,9 +51,8 @@ export const AlarmDismissalScreen = ({
   onDismiss,
   onSnooze
 }: AlarmDismissalScreenProps) => {
-  const [completedMissions, setCompletedMissions] = useState<number[]>([]);
+  const [completedMissions, setCompletedMissions] = useState<string[]>([]);
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
-  const [selectedMissions, setSelectedMissions] = useState<number[]>([]);
   const [wakeUpCheckCompleted, setWakeUpCheckCompleted] = useState(false);
 
   // Check if snooze is available
@@ -62,20 +61,21 @@ export const AlarmDismissalScreen = ({
     ? `Snooze (${snoozeDuration} min)` 
     : `Snooze (${snoozeDuration} min) - ${maxSnoozes - currentSnoozeCount} left`;
 
-  useEffect(() => {
-    if (missionEnabled && missionCount > 0) {
-      // Randomly select missions
-      const shuffled = [...Array(missionTypes.length)].map((_, i) => i).sort(() => 0.5 - Math.random());
-      setSelectedMissions(shuffled.slice(0, Math.min(missionCount, missionTypes.length)));
-    }
-  }, [missionEnabled, missionCount]);
+  // Get mission components for selected missions
+  const activeMissions = selectedMissions.map(missionId => 
+    missionTypes.find(type => type.id === missionId)
+  ).filter(Boolean);
 
   const handleMissionComplete = () => {
-    const newCompleted = [...completedMissions, selectedMissions[currentMissionIndex]];
+    const currentMissionId = activeMissions[currentMissionIndex]?.id;
+    if (!currentMissionId) return;
+    
+    const newCompleted = [...completedMissions, currentMissionId];
     setCompletedMissions(newCompleted);
     
-    if (newCompleted.length >= selectedMissions.length) {
-      // All missions completed, check if wake-up check is needed
+    // Check if we need 3 completed missions and we have them
+    if (newCompleted.length >= Math.min(3, selectedMissions.length)) {
+      // Required missions completed, check if wake-up check is needed
       if (wakeUpCheckEnabled && !wakeUpCheckCompleted) {
         // Wake-up check will be handled by the component
         return;
@@ -91,15 +91,16 @@ export const AlarmDismissalScreen = ({
   const handleWakeUpCheckComplete = () => {
     setWakeUpCheckCompleted(true);
     // Check if all other requirements are met
-    if (!missionEnabled || completedMissions.length >= selectedMissions.length) {
+    if (!missionEnabled || completedMissions.length >= Math.min(3, selectedMissions.length)) {
       setTimeout(() => onDismiss(), 1000);
     }
   };
 
   const canDismissWithoutMissions = (!missionEnabled || selectedMissions.length === 0) && 
                                    (!wakeUpCheckEnabled || wakeUpCheckCompleted);
-  const progress = selectedMissions.length > 0 ? (completedMissions.length / selectedMissions.length) * 100 : 0;
-  const allMissionsCompleted = selectedMissions.length > 0 && completedMissions.length >= selectedMissions.length;
+  const requiredMissions = Math.min(3, selectedMissions.length);
+  const progress = requiredMissions > 0 ? (completedMissions.length / requiredMissions) * 100 : 0;
+  const allMissionsCompleted = requiredMissions > 0 && completedMissions.length >= requiredMissions;
 
   // Render wake-up check mission if needed
   const renderWakeUpCheck = () => {
@@ -145,10 +146,13 @@ export const AlarmDismissalScreen = ({
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium">Mission Progress</span>
             <span className="text-sm text-muted-foreground">
-              {completedMissions.length} / {selectedMissions.length}
+              {completedMissions.length} / {requiredMissions} completed
             </span>
           </div>
           <Progress value={progress} className="h-2" />
+          <p className="text-xs text-muted-foreground mt-1 text-center">
+            Complete {requiredMissions} missions to dismiss alarm
+          </p>
         </div>
       )}
 
@@ -156,15 +160,23 @@ export const AlarmDismissalScreen = ({
       <div className="flex-1 p-4 overflow-y-auto">
         {missionEnabled && selectedMissions.length > 0 ? (
           <div className="space-y-4">
-            {selectedMissions.map((missionTypeIndex, index) => {
-              const MissionComponent = missionTypes[missionTypeIndex].component;
-              const isCompleted = completedMissions.includes(missionTypeIndex);
+            {activeMissions.map((mission, index) => {
+              if (!mission) return null;
+              
+              const MissionComponent = mission.component;
+              const isCompleted = completedMissions.includes(mission.id);
               const isCurrent = index === currentMissionIndex;
               
               if (!isCurrent && !isCompleted) return null;
               
               return (
-                <div key={missionTypeIndex}>
+                <div key={mission.id}>
+                  <div className="mb-2 text-center">
+                    <h3 className="text-lg font-semibold">{mission.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Mission {index + 1} of {requiredMissions}
+                    </p>
+                  </div>
                   <MissionComponent
                     onComplete={handleMissionComplete}
                     isCompleted={isCompleted}

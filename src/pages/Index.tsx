@@ -40,7 +40,7 @@ const Index = () => {
       repeatDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
       soundName: 'https://raw.githubusercontent.com/NatronixM/Motivational-Alarm-Tracks-/main/rise_and_shine.mp3',
       missionEnabled: true,
-      missionCount: 3,
+      selectedMissions: ['math', 'memory', 'shake'],
       volume: 80,
       snoozeEnabled: true,
       snoozeDuration: 5,
@@ -67,7 +67,7 @@ const Index = () => {
       repeatDays: ['Mon', 'Wed', 'Fri'],
       soundName: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Peaceful%20Hi.mp3',
       missionEnabled: true,
-      missionCount: 1,
+      selectedMissions: ['barcode'],
       volume: 60,
       snoozeEnabled: true,
       snoozeDuration: 10,
@@ -363,7 +363,7 @@ const Index = () => {
                 repeatDays={alarm.repeatDays}
                 soundName={alarm.soundName}
                 missionEnabled={alarm.missionEnabled}
-                missionCount={alarm.missionCount}
+                selectedMissions={alarm.selectedMissions}
                 onToggle={handleToggleAlarm}
                 onEdit={handleEditAlarm}
                 onDelete={handleDeleteAlarm}
@@ -378,7 +378,7 @@ const Index = () => {
                 className="w-full text-xs"
               >
                 <Play className="h-3 w-3 mr-1" />
-                Test Alarm {alarm.missionEnabled ? `(${alarm.missionCount} missions)` : '(No missions)'}
+                Test Alarm {alarm.missionEnabled ? `(${alarm.selectedMissions?.length || 0} missions)` : '(No missions)'}
               </Button>
             </div>
           ))}
@@ -414,7 +414,7 @@ const Index = () => {
           alarmLabel={activeAlarm.label}
           alarmTime={activeAlarm.time}
           missionEnabled={activeAlarm.missionEnabled || false}
-          missionCount={activeAlarm.missionCount || 0}
+          selectedMissions={activeAlarm.selectedMissions || []}
           snoozeEnabled={activeAlarm.snoozeEnabled ?? true}
           snoozeDuration={activeAlarm.snoozeDuration || 5}
           maxSnoozes={activeAlarm.maxSnoozes ?? -1}

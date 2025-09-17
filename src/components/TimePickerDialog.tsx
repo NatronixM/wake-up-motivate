@@ -18,6 +18,7 @@ import { WallpaperSelector } from "./WallpaperSelector";
 import { useWallpapers } from "@/hooks/useWallpapers";
 import { useCustomTracks } from "@/hooks/useCustomTracks";
 import { MotivationalTrack, defaultTracks } from "@/data/motivationalTracks";
+import { useToast } from "@/hooks/use-toast";
 
 interface Wallpaper {
   id: string;
@@ -41,6 +42,7 @@ interface TimePickerDialogProps {
   initialMaxSnoozes?: number;
   initialWakeUpCheckEnabled?: boolean;
   initialWakeUpCheckType?: 'math' | 'memory' | 'shake' | 'photo' | 'barcode';
+  initialSelectedMissions?: string[];
   initialWallpaper?: Wallpaper;
   onSave: (alarm: {
     time: string;
@@ -49,7 +51,7 @@ interface TimePickerDialogProps {
     repeatDays: string[];
     soundName: string;
     missionEnabled: boolean;
-    missionCount: number;
+    selectedMissions: string[];
     snoozeEnabled: boolean;
     snoozeDuration: number;
     maxSnoozes: number;
@@ -75,11 +77,13 @@ export const TimePickerDialog = ({
   initialMaxSnoozes = -1,
   initialWakeUpCheckEnabled = false,
   initialWakeUpCheckType = 'math',
+  initialSelectedMissions = [],
   initialWallpaper,
   onSave,
 }: TimePickerDialogProps) => {
   const { customWallpapers, addCustomWallpaper } = useWallpapers();
   const { customTracks, addCustomTrack, deleteCustomTrack } = useCustomTracks();
+  const { toast } = useToast();
   const [time, setTime] = useState(initialTime);
   const [label, setLabel] = useState(initialLabel);
   const [repeatDays, setRepeatDays] = useState<string[]>(initialRepeatDays);
@@ -89,7 +93,7 @@ export const TimePickerDialog = ({
     defaultTracks[0]
   );
   const [missionEnabled, setMissionEnabled] = useState(initialMissionEnabled);
-  const [missionCount, setMissionCount] = useState(3);
+  const [selectedMissions, setSelectedMissions] = useState<string[]>(initialSelectedMissions);
   const [snoozeEnabled, setSnoozeEnabled] = useState(true);
   const [snoozeDuration, setSnoozeDuration] = useState(initialSnoozeDuration);
   const [maxSnoozes, setMaxSnoozes] = useState(initialMaxSnoozes);
@@ -111,11 +115,11 @@ export const TimePickerDialog = ({
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const missionTypes = [
-    { name: "Math Problems", icon: Calculator, count: missionCount },
-    { name: "Memory Game", icon: Brain, count: missionCount },
-    { name: "Barcode Scan", icon: Smartphone, count: missionCount },
-    { name: "Shake Phone", icon: Vibrate, count: missionCount },
-    { name: "Photo Taking", icon: Camera, count: missionCount },
+    { id: "math", name: "Math Problems", icon: Calculator },
+    { id: "memory", name: "Memory Game", icon: Brain },
+    { id: "barcode", name: "Barcode Scan", icon: Smartphone },
+    { id: "shake", name: "Shake Phone", icon: Vibrate },
+    { id: "photo", name: "Photo Taking", icon: Camera },
   ];
 
   const handleDayToggle = (dayIndex: number) => {
@@ -127,7 +131,25 @@ export const TimePickerDialog = ({
     );
   };
 
+  const handleMissionToggle = (missionId: string) => {
+    setSelectedMissions(prev => 
+      prev.includes(missionId)
+        ? prev.filter(id => id !== missionId)
+        : [...prev, missionId]
+    );
+  };
+
   const handleSave = () => {
+    // Validate that if missions are enabled, at least 3 are selected
+    if (missionEnabled && selectedMissions.length < 3) {
+      toast({
+        title: "Mission Selection Required",
+        description: "Please select at least 3 missions to enable mission-based alarm dismissal.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     onSave({
       time,
       label,
@@ -135,7 +157,7 @@ export const TimePickerDialog = ({
       repeatDays,
       soundName: selectedTrack?.url || defaultTracks[0].url, // Use track URL instead of name
       missionEnabled,
-      missionCount,
+      selectedMissions,
       snoozeEnabled,
       snoozeDuration,
       maxSnoozes,
@@ -215,13 +237,13 @@ export const TimePickerDialog = ({
               <div className="flex items-center justify-between">
                 <Label className="text-lg">Mission</Label>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">1/5</span>
+                  <span className="text-sm text-muted-foreground">{selectedMissions.length}/5</span>
                   <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => (
                       <div 
                         key={i}
                         className={`w-3 h-3 rounded-full ${
-                          i === 0 ? 'bg-primary' : 'bg-muted border border-border'
+                          i < selectedMissions.length ? 'bg-primary' : 'bg-muted border border-border'
                         }`}
                       />
                     ))}
@@ -230,18 +252,37 @@ export const TimePickerDialog = ({
               </div>
               
               {missionEnabled && (
-                <div className="grid grid-cols-3 gap-3">
-                  {missionTypes.slice(0, 3).map((mission, index) => {
-                    const IconComponent = mission.icon;
-                    return (
-                      <Card key={mission.name} className={`p-3 text-center border ${
-                        index === 0 ? 'bg-primary/20 border-primary' : 'border-dashed border-border'
-                      }`}>
-                        <IconComponent className="h-8 w-8 mx-auto mb-2 text-primary" />
-                        <div className="text-xs">{mission.count} time(s)</div>
-                      </Card>
-                    );
-                  })}
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Select missions to complete for alarm dismissal (must complete 3 selected missions):
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {missionTypes.map((mission) => {
+                      const IconComponent = mission.icon;
+                      const isSelected = selectedMissions.includes(mission.id);
+                      return (
+                        <Card 
+                          key={mission.id} 
+                          className={`p-3 text-center border cursor-pointer transition-all ${
+                            isSelected 
+                              ? 'bg-primary/20 border-primary shadow-md' 
+                              : 'border-dashed border-border hover:border-primary/50'
+                          }`}
+                          onClick={() => handleMissionToggle(mission.id)}
+                        >
+                          <IconComponent className={`h-6 w-6 mx-auto mb-2 ${
+                            isSelected ? 'text-primary' : 'text-muted-foreground'
+                          }`} />
+                          <div className="text-xs font-medium">{mission.name}</div>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                  {selectedMissions.length < 3 && (
+                    <p className="text-xs text-orange-600 text-center">
+                      ⚠️ Select at least 3 missions to enable alarm dismissal
+                    </p>
+                  )}
                 </div>
               )}
               

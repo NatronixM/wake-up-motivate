@@ -16,7 +16,7 @@ interface AlarmCardProps {
   repeatDays?: string[];
   soundName?: string;
   missionEnabled?: boolean;
-  missionCount?: number;
+  selectedMissions?: string[];
   onToggle: (id: string, active: boolean) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -32,7 +32,7 @@ export const AlarmCard = ({
   repeatDays = [],
   soundName = "Default",
   missionEnabled = false,
-  missionCount = 0,
+  selectedMissions = [],
   onToggle,
   onEdit,
   onDelete,
@@ -110,7 +110,7 @@ export const AlarmCard = ({
               <div className="flex items-center gap-1">
                 <Zap className="h-3 w-3" />
                 <Badge variant="secondary" className="text-xs px-1 py-0">
-                  Mission ✕{missionCount}
+                  Mission ✕{selectedMissions.length}
                 </Badge>
               </div>
             )}
