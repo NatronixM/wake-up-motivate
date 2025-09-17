@@ -345,15 +345,6 @@ export const defaultTracks: MotivationalTrack[] = [
     description: 'Confident and empowering wake-up'
   },
   {
-    id: '40',
-    name: 'Wake Up Lazy',
-    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Wake%20up%20Lazy.mp3',
-    duration: 25,
-    category: 'energetic',
-    isPremium: true,
-    description: 'Motivation for lazy mornings'
-  },
-  {
     id: '41',
     name: 'Want the Gym',
     url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Want%20the%20Gym.mp3',
