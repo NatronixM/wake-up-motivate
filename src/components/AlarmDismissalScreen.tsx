@@ -67,14 +67,11 @@ export const AlarmDismissalScreen = ({
   ).filter(Boolean);
 
   const handleMissionComplete = () => {
-    const currentMissionId = activeMissions[currentMissionIndex]?.id;
-    if (!currentMissionId) return;
-    
-    const newCompleted = [...completedMissions, currentMissionId];
+    const newCompleted = [...completedMissions, 'completed'];
     setCompletedMissions(newCompleted);
     
     // Check if we need 3 completed missions and we have them
-    if (newCompleted.length >= Math.min(3, selectedMissions.length)) {
+    if (newCompleted.length >= 3) {
       // Required missions completed, check if wake-up check is needed
       if (wakeUpCheckEnabled && !wakeUpCheckCompleted) {
         // Wake-up check will be handled by the component
@@ -82,25 +79,23 @@ export const AlarmDismissalScreen = ({
       }
       // All requirements met
       setTimeout(() => onDismiss(), 1000);
-    } else {
-      // Move to next mission
-      setCurrentMissionIndex(prev => prev + 1);
     }
+    // Don't increment mission index - stay on same mission type
   };
 
   const handleWakeUpCheckComplete = () => {
     setWakeUpCheckCompleted(true);
     // Check if all other requirements are met
-    if (!missionEnabled || completedMissions.length >= Math.min(3, selectedMissions.length)) {
+    if (!missionEnabled || completedMissions.length >= 3) {
       setTimeout(() => onDismiss(), 1000);
     }
   };
 
   const canDismissWithoutMissions = (!missionEnabled || selectedMissions.length === 0) && 
                                    (!wakeUpCheckEnabled || wakeUpCheckCompleted);
-  const requiredMissions = Math.min(3, selectedMissions.length);
-  const progress = requiredMissions > 0 ? (completedMissions.length / requiredMissions) * 100 : 0;
-  const allMissionsCompleted = requiredMissions > 0 && completedMissions.length >= requiredMissions;
+  const requiredMissions = 3;
+  const progress = missionEnabled && selectedMissions.length > 0 ? (completedMissions.length / requiredMissions) * 100 : 0;
+  const allMissionsCompleted = missionEnabled && selectedMissions.length > 0 && completedMissions.length >= requiredMissions;
 
   // Render wake-up check mission if needed
   const renderWakeUpCheck = () => {
@@ -151,7 +146,7 @@ export const AlarmDismissalScreen = ({
           </div>
           <Progress value={progress} className="h-2" />
           <p className="text-xs text-muted-foreground mt-1 text-center">
-            Complete {requiredMissions} missions to dismiss alarm
+            Complete the same mission 3 times to dismiss alarm
           </p>
         </div>
       )}
@@ -160,30 +155,26 @@ export const AlarmDismissalScreen = ({
       <div className="flex-1 p-4 overflow-y-auto">
         {missionEnabled && selectedMissions.length > 0 ? (
           <div className="space-y-4">
-            {activeMissions.map((mission, index) => {
-              if (!mission) return null;
-              
-              const MissionComponent = mission.component;
-              const isCompleted = completedMissions.includes(mission.id);
-              const isCurrent = index === currentMissionIndex;
-              
-              if (!isCurrent && !isCompleted) return null;
+            {/* Show only the first selected mission type, repeated 3 times */}
+            {activeMissions.length > 0 && (() => {
+              const selectedMission = activeMissions[0]; // Use first selected mission type
+              const MissionComponent = selectedMission.component;
               
               return (
-                <div key={mission.id}>
+                <div>
                   <div className="mb-2 text-center">
-                    <h3 className="text-lg font-semibold">{mission.name}</h3>
+                    <h3 className="text-lg font-semibold">{selectedMission.name}</h3>
                     <p className="text-sm text-muted-foreground">
-                      Mission {index + 1} of {requiredMissions}
+                      Complete {3 - completedMissions.length} more times
                     </p>
                   </div>
                   <MissionComponent
                     onComplete={handleMissionComplete}
-                    isCompleted={isCompleted}
+                    isCompleted={false}
                   />
                 </div>
               );
-            })}
+            })()}
             
             {/* Wake-up check after missions */}
             {allMissionsCompleted && renderWakeUpCheck()}
