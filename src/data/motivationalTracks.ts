@@ -338,7 +338,7 @@ export const defaultTracks: MotivationalTrack[] = [
   {
     id: '39',
     name: 'Wake You Beautiful Bad Bitch',
-    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Wake%20You%20Beatiful%20Bad%20Bitch%20.mp3',
+    url: 'https://raw.githubusercontent.com/NatronixM/Premium-Motivational-Tracks-/main/Wake%20You%20Beatiful%20Bad%20Bitch.mp3',
     duration: 13,
     category: 'inspirational',
     isPremium: true,
