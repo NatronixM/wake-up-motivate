@@ -10,7 +10,7 @@ interface MathMissionProps {
 }
 
 export const MathMission = ({ onComplete, isCompleted }: MathMissionProps) => {
-  const [problem, setProblem] = useState({ a: 0, b: 0, answer: 0 });
+  const [problem, setProblem] = useState({ a: 0, b: 0, operation: '+', answer: 0 });
   const [userAnswer, setUserAnswer] = useState("");
   const [isCorrect, setIsCorrect] = useState(false);
 
@@ -20,24 +20,23 @@ export const MathMission = ({ onComplete, isCompleted }: MathMissionProps) => {
 
   const generateProblem = () => {
     const a = Math.floor(Math.random() * 50) + 10;
-    const b = Math.floor(Math.random() * 50) + 10;
     const operations = ['+', '-', '*'];
     const operation = operations[Math.floor(Math.random() * operations.length)];
     
-    let answer = 0;
-    switch (operation) {
-      case '+':
-        answer = a + b;
-        break;
-      case '-':
-        answer = a - b;
-        break;
-      case '*':
-        answer = a * b;
-        break;
+    let b, answer;
+    
+    if (operation === '*') {
+      b = Math.floor(Math.random() * 12) + 1; // Keep multiplication simple
+      answer = a * b;
+    } else if (operation === '-') {
+      b = Math.floor(Math.random() * a) + 1; // Ensure positive result
+      answer = a - b;
+    } else {
+      b = Math.floor(Math.random() * 50) + 10;
+      answer = a + b;
     }
     
-    setProblem({ a, b: operation === '*' ? Math.floor(Math.random() * 12) + 1 : b, answer });
+    setProblem({ a, b, operation, answer });
     setUserAnswer("");
     setIsCorrect(false);
   };
@@ -66,7 +65,7 @@ export const MathMission = ({ onComplete, isCompleted }: MathMissionProps) => {
       <div className="text-4xl mb-2">🧮</div>
       <h3 className="text-lg font-semibold mb-4">Solve the Math Problem</h3>
       <div className="text-2xl font-mono mb-4">
-        {problem.a} {problem.b > 10 ? '+' : problem.b < 0 ? '+' : '*'} {Math.abs(problem.b)} = ?
+        {problem.a} {problem.operation} {problem.b} = ?
       </div>
       <div className="flex gap-2 justify-center items-center">
         <Input
