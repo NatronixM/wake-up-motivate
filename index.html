@@ -18,7 +18,26 @@
   </head>
 
   <body>
-    <div id="root"></div>
+    <script>
+      // Hard-disable any existing service workers before the app bootstraps
+      (function() {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            if (regs && regs.length) {
+              Promise.all(regs.map(function(r){ return r.unregister().catch(function(){}); }))
+                .then(function() {
+                  // Force a one-time reload to release SW control
+                  if (!sessionStorage.getItem('sw-cleaned')) {
+                    sessionStorage.setItem('sw-cleaned', '1');
+                    location.reload();
+                  }
+                });
+            }
+          }).catch(function(){});
+        }
+      })();
+    </script>
+    <div id="root">Loading Wake Force…</div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
