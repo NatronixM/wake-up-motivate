@@ -39,5 +39,30 @@
     </script>
     <div id="root">Loading Wake Force…</div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      (function(){
+        window.addEventListener('error', function(e){
+          console.error('[GlobalError]', e.message, (e.filename||'') + ':' + e.lineno + ':' + e.colno, e.error && e.error.stack);
+        });
+        window.addEventListener('unhandledrejection', function(e){
+          console.error('[UnhandledRejection]', e.reason);
+        });
+        // Watchdog: if React hasn't mounted in 3s, show a helpful fallback
+        setTimeout(function(){
+          var root = document.getElementById('root');
+          if (root && (!root.firstElementChild || (root.textContent||'').includes('Loading Wake Force'))){
+            root.innerHTML = '<div style="padding:16px;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#111;background:#fff">\
+<h1 style="font-size:18px;margin:0 0 8px">App failed to start</h1>\
+<p style="margin:0 0 8px">We cleared cached service workers. Please reload the preview to continue.</p>\
+<pre id="wf-diag" style="white-space:pre-wrap;background:#f6f6f6;border:1px solid #e5e5e5;padding:8px;border-radius:8px"></pre>\
+</div>';
+            try{
+              var diag = 'navigator.onLine=' + navigator.onLine + '\nSW supported=' + ('serviceWorker' in navigator);
+              document.getElementById('wf-diag').textContent = diag;
+            }catch(_){ }
+          }
+        }, 3000);
+      })();
+    </script>
   </body>
 </html>
