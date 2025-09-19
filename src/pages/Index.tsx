@@ -26,7 +26,6 @@ interface Wallpaper {
 }
 
 const Index = () => {
-  console.log("Index component rendering");
   const [activeTab, setActiveTab] = useState('alarm');
   const [editingAlarm, setEditingAlarm] = useState<Alarm | null>(null);
   const [activeAlarm, setActiveAlarm] = useState<Alarm | null>(null);
