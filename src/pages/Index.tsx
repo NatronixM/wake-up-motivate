@@ -26,6 +26,7 @@ interface Wallpaper {
 }
 
 const Index = () => {
+  console.log('Index component rendering');
   const [activeTab, setActiveTab] = useState('alarm');
   const [editingAlarm, setEditingAlarm] = useState<Alarm | null>(null);
   const [activeAlarm, setActiveAlarm] = useState<Alarm | null>(null);
@@ -330,6 +331,7 @@ const Index = () => {
     );
   }
 
+  console.log('Index component returning main UI, activeTab:', activeTab);
   return (
     <div className="min-h-screen bg-background pb-20">
       <Header title="Wake Force Alarm Clock" showProBadge />
